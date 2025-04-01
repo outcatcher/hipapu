@@ -1,0 +1,24 @@
+version: "3"
+
+dotenv:
+  - .env
+
+tasks:
+  default:
+    silent: true
+    cmd: task --list
+
+  lint:
+    desc: Run lint on the project
+    cmd: docker run -t --rm -v $(pwd):/app -w /app golangci/golangci-lint:v2.0.2 golangci-lint run
+
+  test:
+    desc: Run tests
+    silent: true
+    cmds:
+      - go test --tags=test -cover -covermode atomic -coverpkg=./... -coverprofile=coverage.out -count=1 ./...
+      - go tool cover -func=coverage.out
+
+  build:
+    desc: Build binary
+    cmd: go build -o ./build/hihapu ./cmd/main.go

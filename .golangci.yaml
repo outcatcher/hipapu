@@ -1,0 +1,68 @@
+version: "2"
+
+run:
+  timeout: "1m"
+  tests: true
+  allow-parallel-runners: true
+  go: "1.24"
+  build-tags:
+    - test
+
+issues:
+  max-same-issues: 0
+
+linters:
+  default: all
+  disable:
+    - gochecknoglobals
+    - exhaustruct
+    - depguard
+    - forbidigo
+    - godox # TODOs are perfectly fine
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters:
+          - gosec
+  # exclusions:
+  # presets:
+  #   - common-false-positives
+  #   - legacy
+  settings:
+    revive:
+      rules:
+        - name: deep-exit
+        - name: defer
+        - name: early-return
+        - name: bare-return
+        - name: exported
+          arguments: ["checkPrivateReceivers"]
+        - name: unreachable-code
+        - name: unused-receiver
+        - name: constant-logical-expr
+        - name: confusing-results
+        - name: unused-parameter
+        - name: modifies-parameter
+        # default rules:
+        - name: var-declaration
+        - name: dot-imports
+        - name: blank-imports
+        - name: var-naming
+        - name: indent-error-flow
+        - name: range
+        - name: errorf
+        - name: receiver-naming
+        - name: increment-decrement
+        - name: error-return
+        - name: time-naming
+        - name: context-keys-type
+        - name: context-as-argument
+    tagliatelle:
+      case:
+        rules:
+          json: snake
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - goimports
