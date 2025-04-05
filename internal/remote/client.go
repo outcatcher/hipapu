@@ -11,6 +11,7 @@ import (
 type Asset struct {
 	Filename    string
 	DownloadURL string
+	TotalSize   int
 }
 
 // Release - github release info.
