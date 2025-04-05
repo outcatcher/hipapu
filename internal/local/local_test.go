@@ -39,7 +39,7 @@ func TestGetFileInfo(t *testing.T) {
 
 	t.Log(file.Name())
 
-	files := local.LocalFiles{}
+	files := local.Files{}
 
 	info, err := files.GetFileInfo(file.Name())
 	require.NoError(t, err)

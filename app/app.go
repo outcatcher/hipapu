@@ -24,25 +24,6 @@ type Application struct {
 	files  localFiles
 }
 
-type cfg interface {
-	// Add adds installation to the list.
-	Add(installation config.Installation) error
-	// GetInstallations returns tracked installs.
-	GetInstallations() []config.Installation
-}
-
-type remoteClient interface {
-	// GetLatestRelease - retrieves latest repository release.
-	GetLatestRelease(ctx context.Context, owner, repo string) (*remote.Release, error)
-	// DownloadFile downloads binary file.
-	DownloadFile(ctx context.Context, downloadURL string, writer io.Writer) error
-}
-
-type localFiles interface {
-	// GetFileInfo returns info on the local file.
-	GetFileInfo(filePath string) (*local.FileInfo, error)
-}
-
 // New create new Application instance with given config and GH token from env.
 //
 // todo (?): move somewhere else.
@@ -66,9 +47,16 @@ func New(configPath string) (*Application, error) {
 	}
 
 	app.WithRemote(remote)
-	app.WithFiles(new(local.LocalFiles))
+	app.WithFiles(new(local.Files))
 
 	return app, nil
+}
+
+type cfg interface {
+	// Add adds installation to the list.
+	Add(installation config.Installation) error
+	// GetInstallations returns tracked installs.
+	GetInstallations() []config.Installation
 }
 
 // WithConfig sets up configuration for the app.
@@ -76,12 +64,24 @@ func (a *Application) WithConfig(cfg cfg) {
 	a.config = cfg
 }
 
+type remoteClient interface {
+	// GetLatestRelease - retrieves latest repository release.
+	GetLatestRelease(ctx context.Context, owner, repo string) (*remote.Release, error)
+	// DownloadFile downloads binary file.
+	DownloadFile(ctx context.Context, downloadURL string, writer io.Writer) error
+}
+
 // WithRemote sets up remote for the app.
 func (a *Application) WithRemote(remote remoteClient) {
 	a.remote = remote
 }
 
-// WithRemote sets up file operations for the app.
+type localFiles interface {
+	// GetFileInfo returns info on the local file.
+	GetFileInfo(filePath string) (*local.FileInfo, error)
+}
+
+// WithFiles sets up file operations for the app.
 func (a *Application) WithFiles(files localFiles) {
 	a.files = files
 }
