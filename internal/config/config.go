@@ -18,3 +18,8 @@ type Installation struct {
 	// OldVersionCount uint8            `json:"old_version_count"`
 	// SkipSync        bool             `json:"skip_sync"`
 }
+
+// GetInstallations returns tracked installs.
+func (c *Config) GetInstallations() []Installation {
+	return c.Installations
+}

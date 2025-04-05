@@ -10,19 +10,17 @@ import (
 )
 
 var (
-	downloadClient = new(http.Client)
-
 	errUnexpectedDownloadStatus = errors.New("unexpected download status")
 )
 
 // DownloadFile downloads binary file.
-func DownloadFile(ctx context.Context, downloadURL string, writer io.Writer) error {
+func (c *Client) DownloadFile(ctx context.Context, downloadURL string, writer io.Writer) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL, nil)
 	if err != nil {
 		return fmt.Errorf("error preparing requiest: %w", err)
 	}
 
-	resp, err := downloadClient.Do(req)
+	resp, err := c.client.Client().Do(req)
 	if err != nil {
 		return fmt.Errorf("error performing requiest: %w", err)
 	}

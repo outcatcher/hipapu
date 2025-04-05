@@ -39,7 +39,9 @@ func TestGetFileInfo(t *testing.T) {
 
 	t.Log(file.Name())
 
-	info, err := local.GetFileInfo(file.Name())
+	files := local.Files{}
+
+	info, err := files.GetFileInfo(file.Name())
 	require.NoError(t, err)
 
 	require.True(t, strings.HasSuffix(info.FilePath, "/"+testFilename))

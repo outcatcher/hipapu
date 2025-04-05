@@ -18,8 +18,11 @@ type FileInfo struct {
 	LastModified time.Time
 }
 
+// Files - service for local operations.
+type Files struct{}
+
 // GetFileInfo returns info on the local file.
-func GetFileInfo(filePath string) (*FileInfo, error) {
+func (*Files) GetFileInfo(filePath string) (*FileInfo, error) {
 	absPath, err := filepath.Abs(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get abs path: %w", err)
