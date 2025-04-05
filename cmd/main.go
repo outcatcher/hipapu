@@ -96,10 +96,12 @@ func main() {
 }
 
 func defaultConfigPath() string {
-	usr, err := user.Current()
-	if err != nil {
-		panic(err)
+	basePath := "."
+
+	usr, _ := user.Current()
+	if usr != nil {
+		basePath = usr.HomeDir
 	}
 
-	return usr.HomeDir + "/.config/hipapu/config.json"
+	return basePath + "/.config/hipapu/config.json"
 }

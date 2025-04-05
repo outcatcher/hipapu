@@ -9,8 +9,6 @@ import (
 	"strings"
 
 	"github.com/outcatcher/hipapu/internal/config"
-	"github.com/outcatcher/hipapu/internal/local"
-	"github.com/outcatcher/hipapu/internal/remote"
 )
 
 // Public sync errors. Self-explanatory.
@@ -21,13 +19,13 @@ var (
 
 // Synchronize downloads all new releases replacing local files.
 func (a *Application) Synchronize(ctx context.Context) error {
-	if len(a.config.Installations) == 0 {
+	if len(a.config.GetInstallations()) == 0 {
 		return ErrEmptyInstallationList
 	}
 
 	var errs error
 
-	for _, installation := range a.config.Installations {
+	for _, installation := range a.config.GetInstallations() {
 		// todo: parrallelize
 		if err := a.syncInstallation(ctx, installation); err != nil {
 			errs = errors.Join(errs, err)
@@ -41,7 +39,7 @@ func (a *Application) Synchronize(ctx context.Context) error {
 
 //nolint:cyclop  // rewriting makes it less readable
 func (a *Application) syncInstallation(ctx context.Context, installation config.Installation) error {
-	file, err := local.GetFileInfo(installation.LocalPath)
+	file, err := a.files.GetFileInfo(installation.LocalPath)
 	if err != nil {
 		return fmt.Errorf("failed to get file info: %w", err)
 	}
@@ -62,7 +60,7 @@ func (a *Application) syncInstallation(ctx context.Context, installation config.
 	downloadURL := ""
 
 	for _, asset := range release.Assets {
-		if strings.HasSuffix(asset.DownloadURL, file.Name) {
+		if asset.Filename == file.Name {
 			downloadURL = asset.DownloadURL
 
 			break
@@ -80,7 +78,7 @@ func (a *Application) syncInstallation(ctx context.Context, installation config.
 		return fmt.Errorf("failed to create tmp file: %w", err)
 	}
 
-	if err := remote.DownloadFile(ctx, downloadURL, tmpFile); err != nil {
+	if err := a.remote.DownloadFile(ctx, downloadURL, tmpFile); err != nil {
 		return fmt.Errorf("failed to dowload to tmp file: %w", err)
 	}
 

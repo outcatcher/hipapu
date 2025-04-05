@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/outcatcher/hipapu/app"
@@ -32,6 +33,12 @@ func (h *actionHandlers) sync(ctx context.Context, _ *cli.Command) error {
 	}
 
 	if err := application.Synchronize(ctx); err != nil {
+		if errors.Is(err, app.ErrEmptyInstallationList) {
+			fmt.Println("Empty installation list. Nothing to synchronize.")
+
+			return nil
+		}
+
 		return fmt.Errorf("error during synchnorization: %w", err)
 	}
 

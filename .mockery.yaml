@@ -1,0 +1,13 @@
+with-expecter: true
+all: true
+recursive: false
+dir: "{{.InterfaceDir}}/mocks"
+outpkg: "mocks"
+filename: "mock_{{.InterfaceName}}.go"
+packages:
+  github.com/outcatcher/hipapu/app:
+
+# compatibility warnings
+issue-845-fix: true
+disable-version-string: true
+resolve-type-alias: false
