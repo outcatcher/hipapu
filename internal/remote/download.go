@@ -15,10 +15,13 @@ var (
 
 // DownloadFile downloads binary file.
 func (c *Client) DownloadFile(ctx context.Context, downloadURL string, writer io.Writer) error {
+	// todo: add progress tracking
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL, nil)
 	if err != nil {
 		return fmt.Errorf("error preparing requiest: %w", err)
 	}
+
+	req.Header.Add("Accept", "application/octet-stream") // otherwise you get json response instead of file
 
 	resp, err := c.client.Client().Do(req)
 	if err != nil {

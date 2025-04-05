@@ -22,6 +22,7 @@ func (c *Client) GetLatestRelease(ctx context.Context, owner, repo string) (*Rel
 		resultAssets = append(resultAssets, Asset{
 			Filename:    asset.GetName(),
 			DownloadURL: asset.GetURL(),
+			TotalSize:   asset.GetSize(),
 		})
 	}
 

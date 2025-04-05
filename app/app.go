@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 
 	"github.com/outcatcher/hipapu/internal/config"
@@ -22,6 +23,8 @@ type Application struct {
 	config cfg
 	remote remoteClient
 	files  localFiles
+
+	logger *slog.Logger
 }
 
 // New create new Application instance with given config and GH token from env.
@@ -48,6 +51,8 @@ func New(configPath string) (*Application, error) {
 
 	app.WithRemote(remote)
 	app.WithFiles(new(local.Files))
+
+	app.logger = slog.Default()
 
 	return app, nil
 }
@@ -84,4 +89,12 @@ type localFiles interface {
 // WithFiles sets up file operations for the app.
 func (a *Application) WithFiles(files localFiles) {
 	a.files = files
+}
+
+func (a *Application) log() *slog.Logger {
+	if a.logger == nil {
+		a.logger = slog.New(slog.DiscardHandler)
+	}
+
+	return a.logger
 }
