@@ -5,37 +5,35 @@ package remote_test
 
 import (
 	"os"
-	"testing"
 
 	"github.com/outcatcher/hipapu/internal/remote"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
-const (
-	testURL      = "https://github.com/outcatcher/hipapu/releases/download/testrelease/release.txt"
-	testFileName = "release.txt"
-)
+func (gs *GithubSuite) TestDownloadFile() {
+	ctx := gs.T().Context()
 
-func TestDownloadFile(t *testing.T) {
-	t.Parallel()
+	remoteClient, err := remote.New(gs.token)
+	gs.Require().NoError(err)
 
-	filePath := t.TempDir() + "/" + testFileName
+	release, err := remoteClient.GetLatestRelease(ctx, testOwner, testRepo)
+	gs.Require().NoError(err)
 
-	t.Cleanup(func() {
-		require.NoError(t, os.Remove(filePath))
+	filePath := gs.T().TempDir() + "/" + release.Assets[0].Filename
+
+	gs.T().Cleanup(func() {
+		gs.Require().NoError(os.Remove(filePath))
 	})
 
 	file, err := os.Create(filePath)
-	require.NoError(t, err)
+	gs.Require().NoError(err)
 
 	// closing file after that is important, so using 'assert' instead of 'require'
-	assert.NoError(t, remote.DownloadFile(t.Context(), testURL, file))
+	gs.Assert().NoError(remoteClient.DownloadFile(ctx, release.Assets[0].DownloadURL, file))
 
-	require.NoError(t, file.Close())
+	gs.Require().NoError(file.Close())
 
 	stat, err := os.Stat(filePath)
-	require.NoError(t, err)
+	gs.Require().NoError(err)
 
-	require.Positive(t, stat.Size(), "file is empty")
+	gs.Require().Positive(stat.Size(), "file is empty")
 }

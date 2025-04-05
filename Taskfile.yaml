@@ -12,13 +12,19 @@ tasks:
     desc: Run lint on the project
     cmd: docker run -t --rm -v $(pwd):/app -w /app golangci/golangci-lint:v2.0.2 golangci-lint run
 
+  mock:
+    desc: Generates mocks
+    cmd: mockery
+
   test:
     desc: Run tests
     silent: true
     cmds:
-      - go test --tags=test -cover -covermode atomic -coverpkg=./... -coverprofile=coverage.out -count=1 ./...
+      - go test -v --tags=test -cover -covermode atomic -coverpkg=./... -coverprofile=coverage.out -count=1 ./...
+      - grep -v -E -f .covignore coverage.out > coverage.filtered.out
+      - mv coverage.filtered.out coverage.out
       - go tool cover -func=coverage.out
 
   build:
     desc: Build binary
-    cmd: go build -o ./build/hihapu ./cmd/main.go
+    cmd: go build -o ./build/hihapu ./cmd/...

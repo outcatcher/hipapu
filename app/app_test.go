@@ -4,10 +4,15 @@
 package app_test
 
 import (
-	"os"
 	"testing"
+	"time"
 
 	"github.com/outcatcher/hipapu/app"
+	"github.com/outcatcher/hipapu/app/mocks"
+	"github.com/outcatcher/hipapu/internal/config"
+	"github.com/outcatcher/hipapu/internal/local"
+	"github.com/outcatcher/hipapu/internal/remote"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -30,24 +35,65 @@ func TestAppNewConfig(t *testing.T) {
 func TestAppWorkflow(t *testing.T) {
 	t.Parallel()
 
-	tmpDir := t.TempDir()
+	apk := new(app.Application)
 
-	configFilePath := tmpDir + "/test.config"
-	localFilePath := tmpDir + "/release.txt"
+	const (
+		expectecdURL = "https://github.com/outcatcher/asdfasdf"
 
-	apk, err := app.New(configFilePath)
-	require.NoError(t, err)
+		expectedConfigPath    = "./config.cfg"
+		expectedLocalFilename = "localFilePath"
 
-	require.NoError(t, apk.Add("https://github.com/outcatcher/hipapu", localFilePath))
+		expectedTestOwner = "outcatcher"
+		expectedTestRepo  = "asdfasdf"
 
-	require.FileExists(t, configFilePath)
-	require.NoFileExists(t, localFilePath)
+		expectecdDownloadURL = "https://adfsgijnasdfgj.test"
+	)
 
-	require.NoError(t, apk.Synchronize(t.Context()))
-	require.FileExists(t, localFilePath)
+	expectedLocalPath := t.TempDir() + "/" + expectedLocalFilename
 
-	stat, err := os.Stat(localFilePath)
-	require.NoError(t, err)
+	mockCfg := mocks.NewMockcfg(t)
+	mockCfg.On("Add", config.Installation{
+		RepoURL:   expectecdURL,
+		LocalPath: expectedLocalPath,
+	}).Return(nil)
+	mockCfg.On("GetInstallations").Return([]config.Installation{
+		{
+			RepoURL:   expectecdURL,
+			LocalPath: expectedLocalPath,
+		},
+	})
 
-	require.Positive(t, stat.Size(), "local file not downloaded")
+	apk.WithConfig(mockCfg)
+
+	ctx := t.Context()
+
+	mockRemote := mocks.NewMockremoteClient(t)
+	mockRemote.
+		On("GetLatestRelease", ctx, expectedTestOwner, expectedTestRepo).
+		Return(&remote.Release{
+			Name:        "123",
+			Description: "234",
+			PublishedAt: time.Now(),
+			Assets: []remote.Asset{{
+				Filename:    expectedLocalFilename,
+				DownloadURL: expectecdDownloadURL,
+			}},
+		}, nil)
+	mockRemote.
+		On("DownloadFile", ctx, expectecdDownloadURL, mock.AnythingOfType("*os.File")).
+		Return(nil)
+
+	apk.WithRemote(mockRemote)
+
+	mockLocal := mocks.NewMocklocalFiles(t)
+	mockLocal.On("GetFileInfo", expectedLocalPath).Return(&local.FileInfo{
+		Name:     expectedLocalFilename,
+		FilePath: expectedLocalPath,
+	}, nil)
+
+	apk.WithFiles(mockLocal)
+
+	require.NoError(t, apk.Add(expectecdURL, expectedLocalPath))
+
+	require.NoError(t, apk.Synchronize(ctx))
 }
