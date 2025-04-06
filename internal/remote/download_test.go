@@ -32,8 +32,8 @@ func (gs *GithubSuite) TestDownloadFile() {
 
 	gs.Require().NoError(file.Close())
 
-	stat, err := os.Stat(filePath)
+	data, err := os.ReadFile(filePath)
 	gs.Require().NoError(err)
 
-	gs.Require().Positive(stat.Size(), "file is empty")
+	gs.Require().Equal(testData, string(data))
 }
