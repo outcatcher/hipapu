@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/user"
 
@@ -12,6 +11,7 @@ import (
 const (
 	commandAdd  = "add"
 	commandSync = "sync"
+	commandList = "list"
 )
 
 //nolint:funlen  // todo: rewrite this abomination
@@ -22,19 +22,6 @@ func main() {
 		Name:  "hipapu",
 		Usage: "HiPaPu is a tool for automatic updates of binary packages installed from GitHub",
 		Flags: []cli.Flag{
-			&cli.BoolFlag{
-				Name:        "list",
-				HideDefault: true,
-				Usage:       "List existing synchronizations",
-				Local:       true,
-				Aliases:     []string{"l"},
-				Action: func(context.Context, *cli.Command, bool) error {
-					fmt.Println("list of sync packages:\n  1. Test me")
-
-					return nil
-				},
-				OnlyOnce: true,
-			},
 			&cli.StringFlag{
 				Name:        "config",
 				Usage:       "Configuration file path",
@@ -83,8 +70,15 @@ func main() {
 				Action:                handlers.sync,
 				Suggest:               true,
 			},
+			{
+				Name:                  commandList,
+				Usage:                 "List existing installations",
+				EnableShellCompletion: true,
+				Action:                handlers.list,
+				Suggest:               true,
+			},
 		},
-		DefaultCommand:        commandSync,
+		DefaultCommand:        commandList,
 		EnableShellCompletion: true,
 	}
 
