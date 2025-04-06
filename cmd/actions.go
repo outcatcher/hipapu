@@ -44,3 +44,20 @@ func (h *actionHandlers) sync(ctx context.Context, _ *cli.Command) error {
 
 	return nil
 }
+
+func (h *actionHandlers) list(context.Context, *cli.Command) error {
+	application, err := app.New(h.configPath)
+	if err != nil {
+		return fmt.Errorf("failed to start app: %w", err)
+	}
+
+	installations := application.List()
+
+	fmt.Println("Installations:")
+
+	for i, installation := range installations {
+		fmt.Printf("#%d) %s <---> %s\n", i+1, installation.RepoURL, installation.LocalPath)
+	}
+
+	return nil
+}
