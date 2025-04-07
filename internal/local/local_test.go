@@ -1,6 +1,8 @@
 //go:build test
 // +build test
 
+// Copyright (C) 2025  Anton Kachurin
+
 package local_test
 
 import (

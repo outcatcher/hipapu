@@ -1,3 +1,4 @@
+// Copyright (C) 2025  Anton Kachurin
 package config
 
 import "fmt"
