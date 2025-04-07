@@ -8,6 +8,8 @@ import (
 	"io"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/outcatcher/hipapu/internal/config"
 	"github.com/outcatcher/hipapu/internal/local"
@@ -53,9 +55,31 @@ func New(configPath string) (*Application, error) {
 	app.WithRemote(remote)
 	app.WithFiles(new(local.Files))
 
-	app.logger = slog.Default()
+	app.logger = initLogger()
 
 	return app, nil
+}
+
+// todo: rewrite
+func initLogger() *slog.Logger {
+	logFile, err := os.Create("hipapu.log")
+	if err != nil {
+		return nil
+	}
+
+	fileHandler := slog.NewTextHandler(logFile, &slog.HandlerOptions{Level: slog.LevelDebug})
+
+	//todo: move to app shutdown
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+
+	go func() {
+		<-sig
+
+		_ = logFile.Close()
+	}()
+
+	return slog.New(fileHandler)
 }
 
 type cfg interface {

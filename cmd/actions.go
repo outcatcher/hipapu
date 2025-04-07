@@ -24,6 +24,8 @@ func (h *actionHandlers) add(context.Context, *cli.Command) error {
 		return fmt.Errorf("error during installation addition: %w", err)
 	}
 
+	println("Added!")
+
 	return nil
 }
 
@@ -43,6 +45,8 @@ func (h *actionHandlers) sync(ctx context.Context, _ *cli.Command) error {
 		return fmt.Errorf("error during synchnorization: %w", err)
 	}
 
+	println("Sync finished!")
+
 	return nil
 }
 
@@ -57,7 +61,7 @@ func (h *actionHandlers) list(context.Context, *cli.Command) error {
 	fmt.Println("Installations:")
 
 	for i, installation := range installations {
-		fmt.Printf("#%d) %s <---> %s\n", i+1, installation.RepoURL, installation.LocalPath)
+		fmt.Printf("  %d) %s <---> %s\n", i+1, installation.RepoURL, installation.LocalPath)
 	}
 
 	return nil

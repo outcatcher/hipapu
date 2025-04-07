@@ -5,12 +5,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/outcatcher/hipapu/internal/config"
+	"github.com/schollz/progressbar/v3"
 )
 
 // Public sync errors. Self-explanatory.
@@ -19,8 +23,20 @@ var (
 	ErrMissingAsset          = errors.New("no asset with given name found")
 )
 
-// Synchronize downloads all new releases replacing local files.
+// Synchronize runs synchronization of all new releases replacing local files reporting the progress.
 func (a *Application) Synchronize(ctx context.Context) error {
+	ctx, cancel := context.WithCancel(ctx)
+
+	//todo: move to app shutdown
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+
+	go func() {
+		<-sig
+
+		cancel()
+	}()
+
 	installations := a.config.GetInstallations()
 
 	if len(installations) == 0 {
@@ -31,7 +47,9 @@ func (a *Application) Synchronize(ctx context.Context) error {
 
 	var errs error
 
-	for _, installation := range installations {
+	for i, installation := range installations {
+		fmt.Printf("Synchronizing installation #%d of %d\n", i+1, len(installations))
+
 		// todo: parrallelize
 		if err := a.syncInstallation(ctx, installation); err != nil {
 			errs = errors.Join(errs, err)
@@ -44,7 +62,9 @@ func (a *Application) Synchronize(ctx context.Context) error {
 }
 
 //nolint:cyclop,funlen  // rewriting makes it less readable
-func (a *Application) syncInstallation(ctx context.Context, installation config.Installation) error {
+func (a *Application) syncInstallation(
+	ctx context.Context, installation config.Installation,
+) error {
 	file, err := a.files.GetFileInfo(installation.LocalPath)
 	if err != nil {
 		return fmt.Errorf("failed to get file info: %w", err)
@@ -96,7 +116,19 @@ func (a *Application) syncInstallation(ctx context.Context, installation config.
 
 	a.log().Info("Download started", "download URL", downloadURL, "total size, MiB", totalSize/1024/1024) //nolint:mnd
 
-	if err := a.remote.DownloadFile(ctx, downloadURL, tmpFile); err != nil {
+	bar := progressbar.DefaultBytes(-1, "Downloading to"+tmpFilePath)
+	bar.ChangeMax(totalSize)
+
+	// cleanup on cancel
+	go func() {
+		<-ctx.Done()
+
+		_ = tmpFile.Close()
+	}()
+
+	writer := io.MultiWriter(bar, tmpFile)
+
+	if err := a.remote.DownloadFile(ctx, downloadURL, writer); err != nil {
 		return fmt.Errorf("failed to dowload to tmp file: %w", err)
 	}
 
