@@ -1,3 +1,5 @@
+// Copyright (C) 2025  Anton Kachurin
+
 //go:build test
 // +build test
 
