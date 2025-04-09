@@ -12,6 +12,7 @@ import (
 
 const commandNameSync = "sync"
 
+// SyncCommand handle 'sync' subcommand.
 func (h *ActionHandlers) SyncCommand() *cli.Command {
 	return &cli.Command{
 		Name:                  commandNameSync,

@@ -6,6 +6,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+// ConfigFlag - handle '--config' flag.
 func (h *ActionHandlers) ConfigFlag() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:        "config",

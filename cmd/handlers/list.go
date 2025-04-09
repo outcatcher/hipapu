@@ -11,6 +11,7 @@ import (
 
 const commandNameList = "list"
 
+// ListCommand handle 'list' subcommand.
 func (h *ActionHandlers) ListCommand() *cli.Command {
 	return &cli.Command{
 		Name:                  commandNameList,

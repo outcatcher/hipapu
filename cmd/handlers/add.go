@@ -11,6 +11,7 @@ import (
 
 const commandNameAdd = "add"
 
+// AddCommand handle 'add' subcommand.
 func (h *ActionHandlers) AddCommand() *cli.Command {
 	return &cli.Command{
 		Name:  commandNameAdd,
