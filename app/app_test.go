@@ -71,7 +71,7 @@ func TestAppWorkflow(t *testing.T) {
 
 	mockRemote := mocks.NewMockremoteClient(t)
 	mockRemote.
-		On("GetLatestRelease", mock.Anything, expectedTestOwner, expectedTestRepo).
+		On("GetLatestRelease", ctx, expectedTestOwner, expectedTestRepo).
 		Return(&remote.Release{
 			Name:        "123",
 			Description: "234",
@@ -82,7 +82,7 @@ func TestAppWorkflow(t *testing.T) {
 			}},
 		}, nil)
 	mockRemote.
-		On("DownloadFile", mock.Anything, expectecdDownloadURL, mock.Anything).
+		On("DownloadFile", ctx, expectecdDownloadURL, mock.Anything).
 		Return(nil)
 
 	apk.WithRemote(mockRemote)

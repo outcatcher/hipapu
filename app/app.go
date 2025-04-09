@@ -8,8 +8,6 @@ import (
 	"io"
 	"log/slog"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/outcatcher/hipapu/internal/config"
 	"github.com/outcatcher/hipapu/internal/local"
@@ -69,17 +67,11 @@ func initLogger() *slog.Logger {
 
 	fileHandler := slog.NewTextHandler(logFile, &slog.HandlerOptions{Level: slog.LevelDebug})
 
-	//todo: move to app shutdown
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	logger := slog.New(fileHandler)
 
-	go func() {
-		<-sig
+	logger.Info("Log started")
 
-		_ = logFile.Close()
-	}()
-
-	return slog.New(fileHandler)
+	return logger
 }
 
 type cfg interface {

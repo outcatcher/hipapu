@@ -7,10 +7,8 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/outcatcher/hipapu/internal/config"
@@ -25,18 +23,6 @@ var (
 
 // Synchronize runs synchronization of all new releases replacing local files reporting the progress.
 func (a *Application) Synchronize(ctx context.Context) error {
-	ctx, cancel := context.WithCancel(ctx)
-
-	//todo: move to app shutdown
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-
-	go func() {
-		<-sig
-
-		cancel()
-	}()
-
 	installations := a.config.GetInstallations()
 
 	if len(installations) == 0 {
@@ -48,6 +34,7 @@ func (a *Application) Synchronize(ctx context.Context) error {
 	var errs error
 
 	for i, installation := range installations {
+		// todo: output is a CLI interaction, needs to be moved out to cmd somehow
 		fmt.Printf("Synchronizing installation #%d of %d\n", i+1, len(installations))
 
 		// todo: parrallelize
@@ -73,7 +60,12 @@ func (a *Application) syncInstallation(
 	urlParts := strings.Split(installation.RepoURL, "/")
 	owner, repo := urlParts[len(urlParts)-2], urlParts[len(urlParts)-1]
 
-	a.log().Info("Starting sync of installation", "owner", owner, "repo", repo, "local path", installation.LocalPath)
+	a.log().InfoContext(ctx,
+		"Starting sync of installation",
+		"owner", owner,
+		"repo", repo,
+		"local path", installation.LocalPath,
+	)
 
 	release, err := a.remote.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
@@ -116,6 +108,7 @@ func (a *Application) syncInstallation(
 
 	a.log().Info("Download started", "download URL", downloadURL, "total size, MiB", totalSize/1024/1024) //nolint:mnd
 
+	// todo: progress bar is a CLI interaction, needs to be moved out to cmd somehow
 	bar := progressbar.DefaultBytes(-1, "Downloading to"+tmpFilePath)
 	bar.ChangeMax(totalSize)
 
