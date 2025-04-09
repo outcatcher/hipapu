@@ -53,9 +53,25 @@ func New(configPath string) (*Application, error) {
 	app.WithRemote(remote)
 	app.WithFiles(new(local.Files))
 
-	app.logger = slog.Default()
+	app.logger = initLogger()
 
 	return app, nil
+}
+
+// todo: rewrite
+func initLogger() *slog.Logger {
+	logFile, err := os.Create("hipapu.log")
+	if err != nil {
+		return nil
+	}
+
+	fileHandler := slog.NewTextHandler(logFile, &slog.HandlerOptions{Level: slog.LevelDebug})
+
+	logger := slog.New(fileHandler)
+
+	logger.Info("Log started")
+
+	return logger
 }
 
 type cfg interface {

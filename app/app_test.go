@@ -82,7 +82,7 @@ func TestAppWorkflow(t *testing.T) {
 			}},
 		}, nil)
 	mockRemote.
-		On("DownloadFile", ctx, expectecdDownloadURL, mock.AnythingOfType("*os.File")).
+		On("DownloadFile", ctx, expectecdDownloadURL, mock.Anything).
 		Return(nil)
 
 	apk.WithRemote(mockRemote)
