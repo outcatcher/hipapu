@@ -27,4 +27,4 @@ tasks:
 
   build:
     desc: Build binary
-    cmd: go build -o ./build/hihapu ./cmd/main.go
+    cmd: go build -o ./build/hipapu ./cmd/main.go
