@@ -5,14 +5,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/outcatcher/hipapu/app"
 	"github.com/urfave/cli/v3"
 )
 
 const commandNameAdd = "add"
 
-// AddCommand handle 'add' subcommand.
-func (h *ActionHandlers) AddCommand() *cli.Command {
+// CommandAdd handle 'add' subcommand.
+func (h *ActionHandlers) CommandAdd() *cli.Command {
 	return &cli.Command{
 		Name:  commandNameAdd,
 		Usage: "Adds package to the watchlist",
@@ -42,17 +41,12 @@ func (h *ActionHandlers) AddCommand() *cli.Command {
 	}
 }
 
-func (h *ActionHandlers) addHandler(context.Context, *cli.Command) error {
-	application, err := app.New(h.configPath)
-	if err != nil {
-		return fmt.Errorf("failed to start app: %w", err)
-	}
-
-	if err := application.Add(h.repoPath, h.filePath); err != nil {
+func (h *ActionHandlers) addHandler(_ context.Context, cmd *cli.Command) error {
+	if err := h.app.Add(h.repoPath, h.filePath); err != nil {
 		return fmt.Errorf("error during installation addition: %w", err)
 	}
 
-	println("Added!")
+	_, _ = fmt.Fprintln(cmd.Writer, "Added!")
 
 	return nil
 }

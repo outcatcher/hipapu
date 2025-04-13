@@ -12,8 +12,8 @@ import (
 
 const commandNameSync = "sync"
 
-// SyncCommand handle 'sync' subcommand.
-func (h *ActionHandlers) SyncCommand() *cli.Command {
+// CommandSync handle 'sync' subcommand.
+func (h *ActionHandlers) CommandSync() *cli.Command {
 	return &cli.Command{
 		Name:                  commandNameSync,
 		Usage:                 "Synchronize packages from repos",
@@ -23,15 +23,10 @@ func (h *ActionHandlers) SyncCommand() *cli.Command {
 	}
 }
 
-func (h *ActionHandlers) sync(ctx context.Context, _ *cli.Command) error {
-	application, err := app.New(h.configPath)
-	if err != nil {
-		return fmt.Errorf("failed to start app: %w", err)
-	}
-
-	if err := application.Synchronize(ctx); err != nil {
+func (h *ActionHandlers) sync(ctx context.Context, cmd *cli.Command) error {
+	if err := h.app.Synchronize(ctx); err != nil {
 		if errors.Is(err, app.ErrEmptyInstallationList) {
-			fmt.Println("Empty installation list. Nothing to synchronize.")
+			_, _ = fmt.Fprintln(cmd.Writer, "Empty installation list. Nothing to synchronize.")
 
 			return nil
 		}
@@ -39,7 +34,7 @@ func (h *ActionHandlers) sync(ctx context.Context, _ *cli.Command) error {
 		return fmt.Errorf("error during synchnorization: %w", err)
 	}
 
-	println("Sync finished!")
+	_, _ = fmt.Fprintln(cmd.Writer, "Sync finished!")
 
 	return nil
 }

@@ -14,7 +14,7 @@ tasks:
 
   mock:
     desc: Generates mocks
-    cmd: docker run -v "$PWD":/src -w /src vektra/mockery
+    cmd: docker run -v "$PWD":/src -w /src vektra/mockery:v2.53
 
   test:
     desc: Run tests

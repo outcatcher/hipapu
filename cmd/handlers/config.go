@@ -1,3 +1,5 @@
+// Copyright (C) 2025  Anton Kachurin
+
 package handlers
 
 import (
@@ -6,8 +8,8 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-// ConfigFlag - handle '--config' flag.
-func (h *ActionHandlers) ConfigFlag() *cli.StringFlag {
+// FlagConfig - handle '--config' flag.
+func (h *ActionHandlers) FlagConfig() *cli.StringFlag {
 	return &cli.StringFlag{
 		Name:        "config",
 		Usage:       "Configuration file path",
@@ -16,8 +18,6 @@ func (h *ActionHandlers) ConfigFlag() *cli.StringFlag {
 		Value:       defaultConfigPath(),
 		Destination: &h.configPath,
 		Aliases:     []string{"c"},
-		TakesFile:   true,
-		OnlyOnce:    true,
 	}
 }
 
