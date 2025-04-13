@@ -5,14 +5,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/outcatcher/hipapu/app"
 	"github.com/urfave/cli/v3"
 )
 
 const commandNameList = "list"
 
-// ListCommand handle 'list' subcommand.
-func (h *ActionHandlers) ListCommand() *cli.Command {
+// CommandList handle 'list' subcommand.
+func (h *ActionHandlers) CommandList() *cli.Command {
 	return &cli.Command{
 		Name:                  commandNameList,
 		Usage:                 "List existing installations",
@@ -22,18 +21,13 @@ func (h *ActionHandlers) ListCommand() *cli.Command {
 	}
 }
 
-func (h *ActionHandlers) list(context.Context, *cli.Command) error {
-	application, err := app.New(h.configPath)
-	if err != nil {
-		return fmt.Errorf("failed to start app: %w", err)
-	}
+func (h *ActionHandlers) list(_ context.Context, cmd *cli.Command) error {
+	installations := h.app.List()
 
-	installations := application.List()
-
-	fmt.Println("Installations:")
+	_, _ = fmt.Fprintln(cmd.Writer, "Installations:")
 
 	for i, installation := range installations {
-		fmt.Printf("  %d) %s <---> %s\n", i+1, installation.RepoURL, installation.LocalPath)
+		_, _ = fmt.Fprintf(cmd.Writer, "  %d) %s <---> %s\n", i+1, installation.RepoURL, installation.LocalPath)
 	}
 
 	return nil

@@ -4,8 +4,10 @@ recursive: false
 dir: "{{.InterfaceDir}}/mocks"
 outpkg: "mocks"
 filename: "mock_{{.InterfaceName}}.go"
+mock-build-tags: "test"
 packages:
   github.com/outcatcher/hipapu/app:
+  github.com/outcatcher/hipapu/cmd/handlers:
 
 # compatibility warnings
 issue-845-fix: true

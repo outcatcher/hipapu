@@ -33,19 +33,20 @@ func main() {
 	hdl := new(handlers.ActionHandlers)
 
 	cmd := &cli.Command{
-		Name:      "hipapu",
-		Usage:     "HiPaPu is a tool for automatic updates of binary packages installed from GitHub",
-		Copyright: copyright,
+		Name:  "hipapu",
+		Usage: "HiPaPu is a tool for automatic updates of binary packages installed from GitHub",
 		Flags: []cli.Flag{
-			hdl.ConfigFlag(),
+			hdl.FlagConfig(),
 		},
 		Commands: []*cli.Command{
-			hdl.AddCommand(),
-			hdl.SyncCommand(),
-			hdl.ListCommand(),
+			hdl.CommandAdd(),
+			hdl.CommandSync(),
+			hdl.CommandList(),
 		},
+		Before:                hdl.Before,
 		DefaultCommand:        handlers.DefaultCommandName,
 		EnableShellCompletion: true,
+		Copyright:             copyright,
 	}
 
 	sig := make(chan os.Signal, 1)
