@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/outcatcher/hipapu/app"
-	"github.com/outcatcher/hipapu/internal/config"
 	"github.com/urfave/cli/v3"
 )
 
@@ -14,7 +13,7 @@ import (
 const DefaultCommandName = commandNameList
 
 type application interface {
-	List() []config.Installation
+	List(ctx context.Context) ([]app.Installation, error)
 	Add(remoteURL, localPath string) error
 	Synchronize(ctx context.Context) error
 }

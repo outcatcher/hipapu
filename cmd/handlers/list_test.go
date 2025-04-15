@@ -8,9 +8,12 @@ package handlers //nolint:testpackage  // don't want to make useless tests overl
 import (
 	"bytes"
 	"testing"
+	"time"
 
+	"github.com/outcatcher/hipapu/app"
 	"github.com/outcatcher/hipapu/cmd/handlers/mocks"
-	"github.com/outcatcher/hipapu/internal/config"
+	"github.com/outcatcher/hipapu/internal/local"
+	"github.com/outcatcher/hipapu/internal/remote"
 	"github.com/stretchr/testify/require"
 )
 
@@ -24,15 +27,21 @@ func TestList(t *testing.T) {
 		expectedRepoPath = "test-repo-path-add"
 	)
 
-	expectedInstallations := []config.Installation{
+	expectedInstallations := []app.Installation{
 		{
-			RepoURL:   expectedRepoPath,
-			LocalPath: expectedFilePath,
+			Release: &remote.Release{
+				PublishedAt: time.Now(),
+				RepoURL:     expectedRepoPath,
+			},
+			LocalFile: &local.FileInfo{
+				FilePath:     expectedFilePath,
+				LastModified: time.Now().Add(-1 * time.Second),
+			},
 		},
 	}
 
 	appMock := mocks.NewMockapplication(t)
-	appMock.On("List").Once().Return(expectedInstallations)
+	appMock.On("List", ctx).Once().Return(expectedInstallations, nil)
 
 	hdl := &ActionHandlers{app: appMock}
 
@@ -54,4 +63,5 @@ func TestList(t *testing.T) {
 
 	require.Contains(t, line2, expectedRepoPath)
 	require.Contains(t, line2, expectedFilePath)
+	require.Contains(t, line2, "HAS UPDATE")
 }

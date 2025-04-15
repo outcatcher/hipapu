@@ -88,7 +88,7 @@ func (a *Application) WithConfig(cfg cfg) {
 
 type remoteClient interface {
 	// GetLatestRelease - retrieves latest repository release.
-	GetLatestRelease(ctx context.Context, owner, repo string) (*remote.Release, error)
+	GetLatestRelease(ctx context.Context, repoURL string) (*remote.Release, error)
 	// DownloadFile downloads binary file.
 	DownloadFile(ctx context.Context, downloadURL string, writer io.Writer) error
 }

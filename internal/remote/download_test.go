@@ -17,7 +17,7 @@ func (gs *GithubSuite) TestDownloadFile() {
 	remoteClient, err := remote.New(gs.token)
 	gs.Require().NoError(err)
 
-	release, err := remoteClient.GetLatestRelease(ctx, testOwner, testRepo)
+	release, err := remoteClient.GetLatestRelease(ctx, testRepoURL)
 	gs.Require().NoError(err)
 
 	filePath := gs.T().TempDir() + "/" + release.Assets[0].Filename

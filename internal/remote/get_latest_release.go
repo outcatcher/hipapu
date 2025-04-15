@@ -4,10 +4,14 @@ package remote
 import (
 	"context"
 	"fmt"
+	"strings"
 )
 
 // GetLatestRelease - retrieves latest repository release.
-func (c *Client) GetLatestRelease(ctx context.Context, owner, repo string) (*Release, error) {
+func (c *Client) GetLatestRelease(ctx context.Context, repoURL string) (*Release, error) {
+	urlParts := strings.Split(repoURL, "/")
+	owner, repo := urlParts[len(urlParts)-2], urlParts[len(urlParts)-1]
+
 	release, _, err := c.client.Repositories.GetLatestRelease(ctx, owner, repo)
 	if err != nil {
 		return nil, fmt.Errorf("error getting release: %w", err)
@@ -32,6 +36,9 @@ func (c *Client) GetLatestRelease(ctx context.Context, owner, repo string) (*Rel
 		Description: release.GetBody(),
 		PublishedAt: release.PublishedAt.Time,
 		Assets:      resultAssets,
+		Owner:       owner,
+		Repo:        repo,
+		RepoURL:     repoURL,
 	}
 
 	return result, nil

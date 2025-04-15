@@ -45,9 +45,6 @@ func TestAppWorkflow(t *testing.T) {
 		expectedConfigPath    = "./config.cfg"
 		expectedLocalFilename = "localFilePath"
 
-		expectedTestOwner = "outcatcher"
-		expectedTestRepo  = "asdfasdf"
-
 		expectecdDownloadURL = "https://adfsgijnasdfgj.test"
 	)
 
@@ -71,7 +68,7 @@ func TestAppWorkflow(t *testing.T) {
 
 	mockRemote := mocks.NewMockremoteClient(t)
 	mockRemote.
-		On("GetLatestRelease", ctx, expectedTestOwner, expectedTestRepo).
+		On("GetLatestRelease", ctx, expectecdURL).
 		Return(&remote.Release{
 			Name:        "123",
 			Description: "234",

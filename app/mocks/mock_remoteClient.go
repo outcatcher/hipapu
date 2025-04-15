@@ -74,9 +74,9 @@ func (_c *MockremoteClient_DownloadFile_Call) RunAndReturn(run func(context.Cont
 	return _c
 }
 
-// GetLatestRelease provides a mock function with given fields: ctx, owner, repo
-func (_m *MockremoteClient) GetLatestRelease(ctx context.Context, owner string, repo string) (*remote.Release, error) {
-	ret := _m.Called(ctx, owner, repo)
+// GetLatestRelease provides a mock function with given fields: ctx, repoURL
+func (_m *MockremoteClient) GetLatestRelease(ctx context.Context, repoURL string) (*remote.Release, error) {
+	ret := _m.Called(ctx, repoURL)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetLatestRelease")
@@ -84,19 +84,19 @@ func (_m *MockremoteClient) GetLatestRelease(ctx context.Context, owner string, 
 
 	var r0 *remote.Release
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*remote.Release, error)); ok {
-		return rf(ctx, owner, repo)
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*remote.Release, error)); ok {
+		return rf(ctx, repoURL)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) *remote.Release); ok {
-		r0 = rf(ctx, owner, repo)
+	if rf, ok := ret.Get(0).(func(context.Context, string) *remote.Release); ok {
+		r0 = rf(ctx, repoURL)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*remote.Release)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
-		r1 = rf(ctx, owner, repo)
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, repoURL)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -111,15 +111,14 @@ type MockremoteClient_GetLatestRelease_Call struct {
 
 // GetLatestRelease is a helper method to define mock.On call
 //   - ctx context.Context
-//   - owner string
-//   - repo string
-func (_e *MockremoteClient_Expecter) GetLatestRelease(ctx interface{}, owner interface{}, repo interface{}) *MockremoteClient_GetLatestRelease_Call {
-	return &MockremoteClient_GetLatestRelease_Call{Call: _e.mock.On("GetLatestRelease", ctx, owner, repo)}
+//   - repoURL string
+func (_e *MockremoteClient_Expecter) GetLatestRelease(ctx interface{}, repoURL interface{}) *MockremoteClient_GetLatestRelease_Call {
+	return &MockremoteClient_GetLatestRelease_Call{Call: _e.mock.On("GetLatestRelease", ctx, repoURL)}
 }
 
-func (_c *MockremoteClient_GetLatestRelease_Call) Run(run func(ctx context.Context, owner string, repo string)) *MockremoteClient_GetLatestRelease_Call {
+func (_c *MockremoteClient_GetLatestRelease_Call) Run(run func(ctx context.Context, repoURL string)) *MockremoteClient_GetLatestRelease_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(string), args[2].(string))
+		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
@@ -129,7 +128,7 @@ func (_c *MockremoteClient_GetLatestRelease_Call) Return(_a0 *remote.Release, _a
 	return _c
 }
 
-func (_c *MockremoteClient_GetLatestRelease_Call) RunAndReturn(run func(context.Context, string, string) (*remote.Release, error)) *MockremoteClient_GetLatestRelease_Call {
+func (_c *MockremoteClient_GetLatestRelease_Call) RunAndReturn(run func(context.Context, string) (*remote.Release, error)) *MockremoteClient_GetLatestRelease_Call {
 	_c.Call.Return(run)
 	return _c
 }
