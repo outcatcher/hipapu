@@ -45,9 +45,6 @@ func TestAppWorkflow(t *testing.T) {
 		expectedConfigPath    = "./config.cfg"
 		expectedLocalFilename = "localFilePath"
 
-		expectedTestOwner = "outcatcher"
-		expectedTestRepo  = "asdfasdf"
-
 		expectecdDownloadURL = "https://adfsgijnasdfgj.test"
 	)
 
