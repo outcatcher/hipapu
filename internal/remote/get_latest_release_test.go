@@ -33,6 +33,11 @@ func (gs *GithubSuite) TestGetLatestRelease() {
 	gs.Require().NotNil(release)
 
 	gs.Require().Equal(testReleaseName, release.Name)
+	gs.Require().Equal(testOwner, release.Owner)
+	gs.Require().Equal(testRepo, release.Repo)
+	gs.Require().Equal(testRepoURL, release.RepoURL)
+	gs.Require().Equal(testReleaseBody, release.Description)
+
 	gs.Require().Len(release.Assets, 1) // 2 default zips not included
 
 	gs.Require().Equal(testAssetFileName, release.Assets[0].Filename)
