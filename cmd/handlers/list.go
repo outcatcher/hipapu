@@ -21,13 +21,22 @@ func (h *ActionHandlers) CommandList() *cli.Command {
 	}
 }
 
-func (h *ActionHandlers) list(_ context.Context, cmd *cli.Command) error {
-	installations := h.app.List()
+func (h *ActionHandlers) list(ctx context.Context, cmd *cli.Command) error {
+	installations, err := h.app.List(ctx)
+	if err != nil {
+		return fmt.Errorf("error handling `list` command: %w", err)
+	}
 
 	_, _ = fmt.Fprintln(cmd.Writer, "Installations:")
 
-	for i, installation := range installations {
-		_, _ = fmt.Fprintf(cmd.Writer, "  %d) %s <---> %s\n", i+1, installation.RepoURL, installation.LocalPath)
+	for i, inst := range installations {
+		statusString := fmt.Sprintf("  %d) %s <---> %s", i+1, inst.Release.RepoURL, inst.LocalFile.FilePath)
+
+		if inst.Release.PublishedAt.After(inst.LocalFile.LastModified) {
+			statusString += " (HAS UPDATES)"
+		}
+
+		_, _ = fmt.Fprintln(cmd.Writer, statusString)
 	}
 
 	return nil

@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	// todo: create/remove release during Ttest setup/terdown
-	testOwner = "outcatcher"
-	testRepo  = "hipapu-release-testing"
+	testOwner   = "outcatcher"
+	testRepo    = "hipapu-release-testing"
+	testRepoURL = "https://github.com/outcatcher/hipapu-release-testing"
 
 	testData          = "6630cfdb-2123-4802-8ce2-f50336d56c18"
 	testAssetFileName = "release.txt"
@@ -27,7 +27,7 @@ func (gs *GithubSuite) TestGetLatestRelease() {
 	client, err := remote.New(gs.token)
 	gs.Require().NoError(err)
 
-	release, err := client.GetLatestRelease(gs.T().Context(), testOwner, testRepo)
+	release, err := client.GetLatestRelease(gs.T().Context(), testRepoURL)
 	gs.Require().NoError(err)
 
 	gs.Require().NotNil(release)

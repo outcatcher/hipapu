@@ -7,7 +7,7 @@ package mocks
 import (
 	context "context"
 
-	config "github.com/outcatcher/hipapu/internal/config"
+	app "github.com/outcatcher/hipapu/app"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -72,24 +72,34 @@ func (_c *Mockapplication_Add_Call) RunAndReturn(run func(string, string) error)
 	return _c
 }
 
-// List provides a mock function with no fields
-func (_m *Mockapplication) List() []config.Installation {
-	ret := _m.Called()
+// List provides a mock function with given fields: ctx
+func (_m *Mockapplication) List(ctx context.Context) ([]app.Installation, error) {
+	ret := _m.Called(ctx)
 
 	if len(ret) == 0 {
 		panic("no return value specified for List")
 	}
 
-	var r0 []config.Installation
-	if rf, ok := ret.Get(0).(func() []config.Installation); ok {
-		r0 = rf()
+	var r0 []app.Installation
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context) ([]app.Installation, error)); ok {
+		return rf(ctx)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context) []app.Installation); ok {
+		r0 = rf(ctx)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]config.Installation)
+			r0 = ret.Get(0).([]app.Installation)
 		}
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // Mockapplication_List_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'List'
@@ -98,23 +108,24 @@ type Mockapplication_List_Call struct {
 }
 
 // List is a helper method to define mock.On call
-func (_e *Mockapplication_Expecter) List() *Mockapplication_List_Call {
-	return &Mockapplication_List_Call{Call: _e.mock.On("List")}
+//   - ctx context.Context
+func (_e *Mockapplication_Expecter) List(ctx interface{}) *Mockapplication_List_Call {
+	return &Mockapplication_List_Call{Call: _e.mock.On("List", ctx)}
 }
 
-func (_c *Mockapplication_List_Call) Run(run func()) *Mockapplication_List_Call {
+func (_c *Mockapplication_List_Call) Run(run func(ctx context.Context)) *Mockapplication_List_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run()
+		run(args[0].(context.Context))
 	})
 	return _c
 }
 
-func (_c *Mockapplication_List_Call) Return(_a0 []config.Installation) *Mockapplication_List_Call {
-	_c.Call.Return(_a0)
+func (_c *Mockapplication_List_Call) Return(_a0 []app.Installation, _a1 error) *Mockapplication_List_Call {
+	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *Mockapplication_List_Call) RunAndReturn(run func() []config.Installation) *Mockapplication_List_Call {
+func (_c *Mockapplication_List_Call) RunAndReturn(run func(context.Context) ([]app.Installation, error)) *Mockapplication_List_Call {
 	_c.Call.Return(run)
 	return _c
 }

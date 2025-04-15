@@ -8,10 +8,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
-	"github.com/outcatcher/hipapu/internal/config"
 	"github.com/schollz/progressbar/v3"
 )
 
@@ -23,7 +21,10 @@ var (
 
 // Synchronize runs synchronization of all new releases replacing local files reporting the progress.
 func (a *Application) Synchronize(ctx context.Context) error {
-	installations := a.config.GetInstallations()
+	installations, err := a.List(ctx)
+	if err != nil {
+		return fmt.Errorf("sync error: %w", err)
+	}
 
 	if len(installations) == 0 {
 		return ErrEmptyInstallationList
@@ -50,29 +51,18 @@ func (a *Application) Synchronize(ctx context.Context) error {
 
 //nolint:cyclop,funlen  // rewriting makes it less readable
 func (a *Application) syncInstallation(
-	ctx context.Context, installation config.Installation,
+	ctx context.Context, installation Installation,
 ) error {
-	file, err := a.files.GetFileInfo(installation.LocalPath)
-	if err != nil {
-		return fmt.Errorf("failed to get file info: %w", err)
-	}
-
-	urlParts := strings.Split(installation.RepoURL, "/")
-	owner, repo := urlParts[len(urlParts)-2], urlParts[len(urlParts)-1]
-
 	a.log().InfoContext(ctx,
 		"Starting sync of installation",
-		"owner", owner,
-		"repo", repo,
-		"local path", installation.LocalPath,
+		"owner", installation.Release.Owner,
+		"repo", installation.Release.Repo,
+		"local path", installation.LocalFile.FilePath,
 	)
 
-	release, err := a.remote.GetLatestRelease(ctx, owner, repo)
-	if err != nil {
-		return fmt.Errorf("failed to get release info: %w", err)
-	}
+	release, file := installation.Release, installation.LocalFile
 
-	if !release.PublishedAt.After(file.LastModified) {
+	if !release.PublishedAt.After(installation.LocalFile.LastModified) {
 		a.log().Info(
 			"Current installation is up to date",
 			"published at", release.PublishedAt.Format(time.RFC3339),
@@ -140,9 +130,9 @@ func (a *Application) syncInstallation(
 	}
 
 	a.log().Info("Finished sync of installation",
-		"owner", owner,
-		"repo", repo,
-		"local path", installation.LocalPath,
+		"owner", release.Owner,
+		"repo", release.Repo,
+		"local path", file.FilePath,
 		"download URL", downloadURL,
 	)
 

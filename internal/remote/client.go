@@ -17,6 +17,9 @@ type Asset struct {
 
 // Release - github release info.
 type Release struct {
+	RepoURL     string
+	Owner       string
+	Repo        string
 	Name        string
 	Description string
 	PublishedAt time.Time
