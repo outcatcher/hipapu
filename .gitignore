@@ -25,3 +25,5 @@ go.work.sum
 build/*
 
 *.log
+# Added by goreleaser init:
+dist/
