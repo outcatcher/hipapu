@@ -6,6 +6,8 @@
 package app_test
 
 import (
+	"bytes"
+	"io"
 	"testing"
 	"time"
 
@@ -40,7 +42,8 @@ func TestAppWorkflow(t *testing.T) {
 	apk := new(app.Application)
 
 	const (
-		expectecdURL = "https://github.com/outcatcher/asdfasdf"
+		expectecdURL    = "https://github.com/outcatcher/asdfasdf"
+		expectedSkipURL = expectecdURL + ".skip.me"
 
 		expectedConfigPath    = "./config.cfg"
 		expectedLocalFilename = "localFilePath"
@@ -60,6 +63,11 @@ func TestAppWorkflow(t *testing.T) {
 			RepoURL:   expectecdURL,
 			LocalPath: expectedLocalPath,
 		},
+		{
+			RepoURL:   expectedSkipURL,
+			LocalPath: expectedLocalPath,
+			SkipSync:  true,
+		},
 	})
 
 	apk.WithConfig(mockCfg)
@@ -77,6 +85,19 @@ func TestAppWorkflow(t *testing.T) {
 				Filename:    expectedLocalFilename,
 				DownloadURL: expectecdDownloadURL,
 			}},
+			RepoURL: expectecdURL,
+		}, nil)
+	mockRemote.
+		On("GetLatestRelease", ctx, expectedSkipURL).
+		Return(&remote.Release{
+			Name:        "123",
+			Description: "234",
+			PublishedAt: time.Now(),
+			Assets: []remote.Asset{{
+				Filename:    expectedLocalFilename,
+				DownloadURL: expectecdDownloadURL,
+			}},
+			RepoURL: expectedSkipURL,
 		}, nil)
 	mockRemote.
 		On("DownloadFile", ctx, expectecdDownloadURL, mock.Anything).
@@ -94,5 +115,18 @@ func TestAppWorkflow(t *testing.T) {
 
 	require.NoError(t, apk.Add(expectecdURL, expectedLocalPath))
 
-	require.NoError(t, apk.Synchronize(ctx))
+	outBuffer := new(bytes.Buffer)
+
+	require.NoError(t, apk.Synchronize(ctx, outBuffer))
+
+	line1, err := outBuffer.ReadString('\n')
+	require.NoError(t, err)
+
+	require.Contains(t, line1, expectecdURL)
+
+	line2, err := io.ReadAll(outBuffer)
+	require.NoError(t, err)
+
+	require.Contains(t, string(line2), "Skipping")
+	require.Contains(t, string(line2), expectedSkipURL)
 }

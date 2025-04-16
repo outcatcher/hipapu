@@ -15,17 +15,18 @@ type Installation struct {
 	Release *remote.Release
 	// Local file info
 	LocalFile *local.FileInfo
+
+	// Skipping sync for installation
+	SkipSync bool
 }
 
 // List lists all existing installations.
-//
-// It would be better to add a type for return, but it's such a waste of code.
 func (a *Application) List(ctx context.Context) ([]Installation, error) {
 	installations := a.config.GetInstallations()
 
 	result := make([]Installation, len(installations))
 
-	for idx, installation := range installations {
+	for i, installation := range installations {
 		release, err := a.remote.GetLatestRelease(ctx, installation.RepoURL)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get release info: %w", err)
@@ -36,9 +37,10 @@ func (a *Application) List(ctx context.Context) ([]Installation, error) {
 			return nil, fmt.Errorf("failed to get installation file info: %w", err)
 		}
 
-		result[idx] = Installation{
+		result[i] = Installation{
 			Release:   release,
 			LocalFile: file,
+			SkipSync:  installation.SkipSync,
 		}
 	}
 

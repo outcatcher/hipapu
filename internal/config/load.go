@@ -7,9 +7,10 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 )
 
-var defaultDownloadLocation = os.TempDir() + "/hihapu"
+const selfRepo = "https://github.com/outcatcher/hipapu"
 
 // LoadConfig loads configuration from file.
 func LoadConfig(path string) (*Config, error) {
@@ -46,7 +47,25 @@ func LoadConfig(path string) (*Config, error) {
 }
 
 func (c *Config) setDefaults() {
-	if c.DownloadLocation == "" {
-		c.DownloadLocation = defaultDownloadLocation
+	hasSelf := slices.ContainsFunc(c.Installations, func(inst Installation) bool {
+		return inst.RepoURL == selfRepo
+	})
+
+	if !hasSelf {
+		c.Installations = appendSelf(c.Installations)
 	}
+}
+
+func appendSelf(installs []Installation) []Installation {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return installs
+	}
+
+	return append(installs, Installation{
+		RepoURL:         selfRepo,
+		LocalPath:       filepath.Join(cwd, os.Args[0]), // register self-update
+		KeepLastVersion: true,                           // safety measure for broken releases
+		SkipSync:        true,                           // todo: remove after KeepLastVersion implemented
+	})
 }

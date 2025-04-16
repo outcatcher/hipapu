@@ -24,7 +24,7 @@ func (h *ActionHandlers) CommandSync() *cli.Command {
 }
 
 func (h *ActionHandlers) sync(ctx context.Context, cmd *cli.Command) error {
-	if err := h.app.Synchronize(ctx); err != nil {
+	if err := h.app.Synchronize(ctx, cmd.Writer); err != nil {
 		if errors.Is(err, app.ErrEmptyInstallationList) {
 			_, _ = fmt.Fprintln(cmd.Writer, "Empty installation list. Nothing to synchronize.")
 
