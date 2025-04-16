@@ -4,6 +4,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"io"
 
 	"github.com/outcatcher/hipapu/app"
 	"github.com/urfave/cli/v3"
@@ -13,9 +14,12 @@ import (
 const DefaultCommandName = commandNameList
 
 type application interface {
+	// List lists all existing installations.
 	List(ctx context.Context) ([]app.Installation, error)
+	// Add adds installation to the list. Rewrites configuration file.
 	Add(remoteURL, localPath string) error
-	Synchronize(ctx context.Context) error
+	// Synchronize runs synchronization of all new releases replacing local files reporting the progress.
+	Synchronize(ctx context.Context, writer io.Writer) error
 }
 
 // ActionHandlers handle CLI actions.

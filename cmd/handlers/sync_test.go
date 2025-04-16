@@ -11,6 +11,7 @@ import (
 
 	"github.com/outcatcher/hipapu/app"
 	"github.com/outcatcher/hipapu/cmd/handlers/mocks"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -20,7 +21,7 @@ func TestSync(t *testing.T) {
 	ctx := t.Context()
 
 	appMock := mocks.NewMockapplication(t)
-	appMock.On("Synchronize", ctx).Once().Return(nil)
+	appMock.On("Synchronize", ctx, mock.Anything).Once().Return(nil)
 
 	hdl := &ActionHandlers{app: appMock}
 
@@ -36,7 +37,7 @@ func TestSync_emptyList(t *testing.T) {
 	ctx := t.Context()
 
 	appMock := mocks.NewMockapplication(t)
-	appMock.On("Synchronize", ctx).Once().Return(app.ErrEmptyInstallationList)
+	appMock.On("Synchronize", ctx, mock.Anything).Once().Return(app.ErrEmptyInstallationList)
 
 	hdl := &ActionHandlers{app: appMock}
 

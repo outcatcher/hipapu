@@ -26,12 +26,14 @@ func TestAdd(t *testing.T) {
 	cfg, err := config.LoadConfig(path)
 	require.NoError(t, err)
 
+	require.Len(t, cfg.Installations, 1, "no self installation")
+
 	require.NoError(t, cfg.Add(testInstall))
 
 	newCfg, err := config.LoadConfig(path)
 	require.NoError(t, err)
 	require.NotNil(t, newCfg)
 
-	require.Len(t, newCfg.Installations, 1)
-	require.Equal(t, testInstall, newCfg.Installations[0])
+	require.Len(t, newCfg.Installations, 2)
+	require.Contains(t, newCfg.Installations, testInstall)
 }

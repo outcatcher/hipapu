@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -61,7 +62,7 @@ func main() {
 	}()
 
 	if err := cmd.Run(ctx, os.Args); err != nil {
-		println(err.Error())
+		fmt.Println(err) //nolint:forbidigo  // exactly where needed
 
 		os.Exit(1)
 	}

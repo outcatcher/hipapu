@@ -9,6 +9,8 @@ import (
 
 	app "github.com/outcatcher/hipapu/app"
 
+	io "io"
+
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -130,17 +132,17 @@ func (_c *Mockapplication_List_Call) RunAndReturn(run func(context.Context) ([]a
 	return _c
 }
 
-// Synchronize provides a mock function with given fields: ctx
-func (_m *Mockapplication) Synchronize(ctx context.Context) error {
-	ret := _m.Called(ctx)
+// Synchronize provides a mock function with given fields: ctx, writer
+func (_m *Mockapplication) Synchronize(ctx context.Context, writer io.Writer) error {
+	ret := _m.Called(ctx, writer)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Synchronize")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context) error); ok {
-		r0 = rf(ctx)
+	if rf, ok := ret.Get(0).(func(context.Context, io.Writer) error); ok {
+		r0 = rf(ctx, writer)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -155,13 +157,14 @@ type Mockapplication_Synchronize_Call struct {
 
 // Synchronize is a helper method to define mock.On call
 //   - ctx context.Context
-func (_e *Mockapplication_Expecter) Synchronize(ctx interface{}) *Mockapplication_Synchronize_Call {
-	return &Mockapplication_Synchronize_Call{Call: _e.mock.On("Synchronize", ctx)}
+//   - writer io.Writer
+func (_e *Mockapplication_Expecter) Synchronize(ctx interface{}, writer interface{}) *Mockapplication_Synchronize_Call {
+	return &Mockapplication_Synchronize_Call{Call: _e.mock.On("Synchronize", ctx, writer)}
 }
 
-func (_c *Mockapplication_Synchronize_Call) Run(run func(ctx context.Context)) *Mockapplication_Synchronize_Call {
+func (_c *Mockapplication_Synchronize_Call) Run(run func(ctx context.Context, writer io.Writer)) *Mockapplication_Synchronize_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context))
+		run(args[0].(context.Context), args[1].(io.Writer))
 	})
 	return _c
 }
@@ -171,7 +174,7 @@ func (_c *Mockapplication_Synchronize_Call) Return(_a0 error) *Mockapplication_S
 	return _c
 }
 
-func (_c *Mockapplication_Synchronize_Call) RunAndReturn(run func(context.Context) error) *Mockapplication_Synchronize_Call {
+func (_c *Mockapplication_Synchronize_Call) RunAndReturn(run func(context.Context, io.Writer) error) *Mockapplication_Synchronize_Call {
 	_c.Call.Return(run)
 	return _c
 }

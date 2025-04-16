@@ -20,7 +20,7 @@ var (
 )
 
 // Synchronize runs synchronization of all new releases replacing local files reporting the progress.
-func (a *Application) Synchronize(ctx context.Context) error {
+func (a *Application) Synchronize(ctx context.Context, writer io.Writer) error {
 	installations, err := a.List(ctx)
 	if err != nil {
 		return fmt.Errorf("sync error: %w", err)
@@ -35,11 +35,29 @@ func (a *Application) Synchronize(ctx context.Context) error {
 	var errs error
 
 	for i, installation := range installations {
+		if installation.SkipSync {
+			_, _ = fmt.Fprintf(
+				writer,
+				"Skipping sync for installation #%d of %d (%s)\n",
+				i+1,
+				len(installations),
+				installation.Release.RepoURL,
+			)
+
+			continue
+		}
+
 		// todo: output is a CLI interaction, needs to be moved out to cmd somehow
-		fmt.Printf("Synchronizing installation #%d of %d\n", i+1, len(installations))
+		_, _ = fmt.Fprintf(
+			writer,
+			"Synchronizing installation #%d of %d (%s)\n",
+			i+1,
+			len(installations),
+			installation.Release.RepoURL,
+		)
 
 		// todo: parrallelize
-		if err := a.syncInstallation(ctx, installation); err != nil {
+		if err := a.syncInstallation(ctx, installation, writer); err != nil {
 			errs = errors.Join(errs, err)
 
 			continue
@@ -51,7 +69,7 @@ func (a *Application) Synchronize(ctx context.Context) error {
 
 //nolint:cyclop,funlen  // rewriting makes it less readable
 func (a *Application) syncInstallation(
-	ctx context.Context, installation Installation,
+	ctx context.Context, installation Installation, extWriter io.Writer,
 ) error {
 	a.log().InfoContext(ctx,
 		"Starting sync of installation",
@@ -99,8 +117,7 @@ func (a *Application) syncInstallation(
 	a.log().Info("Download started", "download URL", downloadURL, "total size, MiB", totalSize/1024/1024) //nolint:mnd
 
 	// todo: progress bar is a CLI interaction, needs to be moved out to cmd somehow
-	bar := progressbar.DefaultBytes(-1, "Downloading to"+tmpFilePath)
-	bar.ChangeMax(totalSize)
+	bar := newProgressBar(extWriter, totalSize, "Downloading to "+tmpFilePath)
 
 	// cleanup on cancel
 	go func() {
@@ -137,4 +154,24 @@ func (a *Application) syncInstallation(
 	)
 
 	return nil
+}
+
+func newProgressBar(writer io.Writer, maxBytes int, description string) *progressbar.ProgressBar {
+	//nolint:mnd  // temporary location for progress bar initialization
+	return progressbar.NewOptions(
+		maxBytes,
+		progressbar.OptionSetDescription(description),
+		progressbar.OptionSetWriter(writer),
+		progressbar.OptionShowBytes(true),
+		progressbar.OptionShowTotalBytes(true),
+		progressbar.OptionSetWidth(10),
+		progressbar.OptionThrottle(65*time.Millisecond),
+		progressbar.OptionShowCount(),
+		progressbar.OptionOnCompletion(func() {
+			_, _ = fmt.Fprint(writer, "\n")
+		}),
+		progressbar.OptionSpinnerType(14),
+		progressbar.OptionFullWidth(),
+		progressbar.OptionSetRenderBlankState(true),
+	)
 }
