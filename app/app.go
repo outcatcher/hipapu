@@ -83,6 +83,8 @@ type installationsLock interface {
 	Add(installation lock.Installation) error
 	// GetInstallations returns tracked installs.
 	GetInstallations() []lock.Installation
+	// Update updates lockfile format making a backup.
+	UpdateVersion() error
 }
 
 // WithLockfile sets up lockfile for the app.

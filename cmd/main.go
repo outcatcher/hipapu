@@ -46,6 +46,7 @@ func main() {
 		},
 		Before:                hdl.Before,
 		DefaultCommand:        handlers.DefaultCommandName,
+		Suggest:               true,
 		EnableShellCompletion: true,
 		Copyright:             copyright,
 	}

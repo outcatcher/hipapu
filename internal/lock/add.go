@@ -9,7 +9,7 @@ import (
 
 const minID = 0x10000
 
-// SaveInstallations creates new or rewrites old installations file.
+// Add adds installation to the list. Rewrites configuration file.
 func (c *Lock) Add(installation Installation) error {
 	if installation.ID == "" {
 		installation.ID = strconv.FormatInt(rand.Int64N(minID)+minID, 16) //nolint:gosec
@@ -17,7 +17,7 @@ func (c *Lock) Add(installation Installation) error {
 
 	c.lockData.Installations = append(c.lockData.Installations, installation)
 
-	if err := c.SaveInstallations(); err != nil {
+	if err := c.saveInstallations(false); err != nil {
 		return fmt.Errorf("failed to save added installation: %w", err)
 	}
 

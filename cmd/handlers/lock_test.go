@@ -14,11 +14,11 @@ import (
 func TestConfig(t *testing.T) {
 	t.Parallel()
 
-	const expectedConfigPath = "test-config-path-add"
+	const expectedLockPath = "test-lock-path-add"
 
 	hdl := &ActionHandlers{}
 
-	require.NoError(t, hdl.FlagLockfile().Set("", expectedConfigPath))
+	require.NoError(t, hdl.FlagLockfile().Set("", expectedLockPath))
 
-	require.Equal(t, expectedConfigPath, hdl.lockPath)
+	require.Equal(t, expectedLockPath, hdl.lockPath)
 }

@@ -30,7 +30,11 @@ type ActionHandlers struct {
 }
 
 // Before is a before function for the command handlers.
-func (h *ActionHandlers) Before(ctx context.Context, _ *cli.Command) (context.Context, error) {
+func (h *ActionHandlers) Before(ctx context.Context, cmd *cli.Command) (context.Context, error) {
+	if err := h.checkAndMigrateLockIfExists(cmd.Reader, cmd.Writer); err != nil {
+		return ctx, fmt.Errorf("failed to init app: %w", err)
+	}
+
 	application, err := app.New(h.lockPath)
 	if err != nil {
 		return ctx, fmt.Errorf("failed to init app: %w", err)

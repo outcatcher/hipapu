@@ -115,6 +115,51 @@ func (_c *MockinstallationsLock_GetInstallations_Call) RunAndReturn(run func() [
 	return _c
 }
 
+// UpdateVersion provides a mock function with no fields
+func (_m *MockinstallationsLock) UpdateVersion() error {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateVersion")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockinstallationsLock_UpdateVersion_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateVersion'
+type MockinstallationsLock_UpdateVersion_Call struct {
+	*mock.Call
+}
+
+// UpdateVersion is a helper method to define mock.On call
+func (_e *MockinstallationsLock_Expecter) UpdateVersion() *MockinstallationsLock_UpdateVersion_Call {
+	return &MockinstallationsLock_UpdateVersion_Call{Call: _e.mock.On("UpdateVersion")}
+}
+
+func (_c *MockinstallationsLock_UpdateVersion_Call) Run(run func()) *MockinstallationsLock_UpdateVersion_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *MockinstallationsLock_UpdateVersion_Call) Return(_a0 error) *MockinstallationsLock_UpdateVersion_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockinstallationsLock_UpdateVersion_Call) RunAndReturn(run func() error) *MockinstallationsLock_UpdateVersion_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockinstallationsLock creates a new instance of MockinstallationsLock. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockinstallationsLock(t interface {
