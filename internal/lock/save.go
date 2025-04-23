@@ -18,6 +18,8 @@ const (
 )
 
 func createBackup(path string) error {
+	path = filepath.Clean(path)
+
 	stat, err := os.Open(path)
 	if err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("failed to stat original file for backup: %w", err)
@@ -31,14 +33,16 @@ func createBackup(path string) error {
 	if err != nil {
 		return fmt.Errorf("failed to open source file: %w", err)
 	}
+
 	defer func() {
 		_ = srcFile.Close()
 	}()
 
-	backupFile, err := os.Create(path + ".backup." + strconv.FormatInt(time.Now().Unix(), 10))
+	backupFile, err := os.Create(path + ".backup." + strconv.FormatInt(time.Now().Unix(), 10)) //nolint:gosec
 	if err != nil {
 		return fmt.Errorf("failed to create backup: %w", err)
 	}
+
 	defer func() {
 		_ = backupFile.Close()
 	}()

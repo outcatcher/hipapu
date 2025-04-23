@@ -7,7 +7,8 @@ import (
 	"golang.org/x/mod/semver"
 )
 
-var ErrUnsupportedVersion = errors.New("unsupported lockfile verison")
+// ErrUnsupportedVersion - unsupported lockfile version.
+var ErrUnsupportedVersion = errors.New("unsupported lockfile version")
 
 // UpdateVersion updates lockfile format making a backup.
 func (l *Lock) UpdateVersion() error {

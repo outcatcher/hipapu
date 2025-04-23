@@ -36,7 +36,7 @@ func defaultConfigPath() string {
 	return basePath + "/.config/hipapu/lock.json"
 }
 
-func (h *ActionHandlers) checkAndMigrateLockIfExists(_ io.Reader, out io.Writer) error {
+func (*ActionHandlers) checkAndMigrateLockIfExists(_ io.Reader, out io.Writer) error {
 	newPath := defaultConfigPath()
 
 	oldPath := filepath.Clean(filepath.Dir(newPath) + "/config.json")
