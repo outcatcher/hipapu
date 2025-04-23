@@ -37,7 +37,7 @@ func main() {
 		Name:  "hipapu",
 		Usage: "HiPaPu is a tool for automatic updates of binary packages installed from GitHub",
 		Flags: []cli.Flag{
-			hdl.FlagConfig(),
+			hdl.FlagLockfile(),
 		},
 		Commands: []*cli.Command{
 			hdl.CommandAdd(),

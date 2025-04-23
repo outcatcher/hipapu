@@ -8,16 +8,15 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-// FlagConfig - handle '--config' flag.
-func (h *ActionHandlers) FlagConfig() *cli.StringFlag {
+// FlagLockfile - handle '--config' flag.
+func (h *ActionHandlers) FlagLockfile() *cli.StringFlag {
 	return &cli.StringFlag{
-		Name:        "config",
-		Usage:       "Configuration file path",
+		Name:        "lock",
+		Usage:       "Lockfile path",
 		Sources:     cli.ValueSourceChain{},
 		Required:    false,
 		Value:       defaultConfigPath(),
-		Destination: &h.configPath,
-		Aliases:     []string{"c"},
+		Destination: &h.lockPath,
 	}
 }
 
@@ -29,5 +28,5 @@ func defaultConfigPath() string {
 		basePath = usr.HomeDir
 	}
 
-	return basePath + "/.config/hipapu/config.json"
+	return basePath + "/.config/hipapu/lock.json"
 }

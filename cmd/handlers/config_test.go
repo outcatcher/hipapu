@@ -18,7 +18,7 @@ func TestConfig(t *testing.T) {
 
 	hdl := &ActionHandlers{}
 
-	require.NoError(t, hdl.FlagConfig().Set("", expectedConfigPath))
+	require.NoError(t, hdl.FlagLockfile().Set("", expectedConfigPath))
 
-	require.Equal(t, expectedConfigPath, hdl.configPath)
+	require.Equal(t, expectedConfigPath, hdl.lockPath)
 }
