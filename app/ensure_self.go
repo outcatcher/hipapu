@@ -1,3 +1,4 @@
+// Copyright (C) 2025  Anton Kachurin
 package app
 
 import (
@@ -10,7 +11,7 @@ import (
 
 const selfRepo = "https://github.com/outcatcher/hipapu"
 
-func (app *Application) ensureSelf() error {
+func (app *Application) EnsureSelf() error {
 	installs := app.lock.GetInstallations()
 
 	hasSelf := slices.ContainsFunc(installs, func(inst installations.Installation) bool {

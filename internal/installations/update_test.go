@@ -53,16 +53,16 @@ func TestUpdate(t *testing.T) {
 
 	require.NoError(t, lock.LoadInstallations(path))
 
-	require.Len(t, lock.GetInstallations(), 2)
+	require.Len(t, lock.GetInstallations(), 1)
 
 	require.NoError(t, lock.UpdateVersion())
 
-	require.Len(t, lock.GetInstallations(), 2)
+	require.Len(t, lock.GetInstallations(), 1)
 
 	entries, err := os.ReadDir(tmpDir)
 	require.NoError(t, err)
 
-	require.Len(t, entries, 2)
+	require.Len(t, entries, 2) // backup created
 }
 func TestUpdateNew(t *testing.T) {
 	t.Parallel()

@@ -28,13 +28,13 @@ func TestAdd(t *testing.T) {
 
 	require.NoError(t, lock.LoadInstallations(path))
 
-	require.Len(t, lock.GetInstallations(), 1, "no self installation")
+	require.Empty(t, lock.GetInstallations())
 
 	require.NoError(t, lock.Add(testInstall))
 
 	require.NoError(t, lock.LoadInstallations(path))
 	require.NotNil(t, lock)
 
-	require.Len(t, lock.GetInstallations(), 2)
+	require.Len(t, lock.GetInstallations(), 1)
 	require.Contains(t, lock.GetInstallations(), testInstall)
 }
