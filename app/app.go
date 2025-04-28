@@ -59,6 +59,10 @@ func New(lockPath string) (*Application, error) {
 	app.WithRemote(remote)
 	app.WithFiles(new(local.Files))
 
+	if err := app.EnsureSelf(); err != nil {
+		return nil, fmt.Errorf("failed to ensure app self install: %w", err)
+	}
+
 	return app, nil
 }
 
