@@ -7,10 +7,7 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
-	"slices"
 )
-
-const selfRepo = "https://github.com/outcatcher/hipapu"
 
 // LoadInstallations loads installations data from file.
 func (l *Lock) LoadInstallations(path string) error {
@@ -37,33 +34,7 @@ func (l *Lock) LoadInstallations(path string) error {
 		}
 	}
 
-	l.setDefaults()
 	l.filePath = path
 
 	return nil
-}
-
-func (l *Lock) setDefaults() {
-	hasSelf := slices.ContainsFunc(l.lockData.Installations, func(inst Installation) bool {
-		return inst.RepoURL == selfRepo
-	})
-
-	if !hasSelf {
-		l.lockData.Installations = appendSelf(l.lockData.Installations)
-	}
-}
-
-func appendSelf(installs []Installation) []Installation {
-	selfPath, err := os.Executable() // os.Args[0] won't work if binary is in PATH
-	if err != nil {
-		return installs
-	}
-
-	return append(installs, Installation{
-		ID:              "0",
-		RepoURL:         selfRepo,
-		LocalPath:       selfPath, // register self-update
-		KeepLastVersion: true,     // safety measure for broken releases
-		SkipSync:        true,     // todo: remove after KeepLastVersion implemented
-	})
 }
