@@ -3,7 +3,7 @@
 //go:build test
 // +build test
 
-package lock_test
+package installations_test
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/outcatcher/hipapu/internal/lock"
+	"github.com/outcatcher/hipapu/internal/installations"
 	"github.com/stretchr/testify/require"
 )
 
@@ -49,20 +49,18 @@ func TestUpdate(t *testing.T) {
 
 	require.NoError(t, origFile.Close())
 
-	locks := new(lock.Lock)
+	lock := new(installations.Lock)
 
-	require.NoError(t, locks.LoadInstallations(path))
+	require.NoError(t, lock.LoadInstallations(path))
 
-	require.Len(t, locks.GetInstallations(), 2)
+	require.Len(t, lock.GetInstallations(), 2)
 
-	require.NoError(t, locks.UpdateVersion())
+	require.NoError(t, lock.UpdateVersion())
+
+	require.Len(t, lock.GetInstallations(), 2)
 
 	entries, err := os.ReadDir(tmpDir)
 	require.NoError(t, err)
-
-	require.Len(t, entries, 2)
-
-	require.NoError(t, locks.UpdateVersion())
 
 	require.Len(t, entries, 2)
 }
@@ -81,11 +79,8 @@ func TestUpdateNew(t *testing.T) {
 
 	require.NoError(t, origFile.Close())
 
-	locks := new(lock.Lock)
+	lock := new(installations.Lock)
 
-	require.NoError(t, locks.LoadInstallations(path))
-
-	require.Len(t, locks.GetInstallations(), 1)
-
-	require.ErrorIs(t, locks.UpdateVersion(), lock.ErrUnsupportedVersion)
+	require.NoError(t, lock.LoadInstallations(path))
+	require.ErrorIs(t, lock.UpdateVersion(), installations.ErrUnsupportedVersion)
 }

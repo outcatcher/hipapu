@@ -5,7 +5,7 @@
 package mocks
 
 import (
-	lock "github.com/outcatcher/hipapu/internal/lock"
+	installations "github.com/outcatcher/hipapu/internal/installations"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -23,7 +23,7 @@ func (_m *MockinstallationsLock) EXPECT() *MockinstallationsLock_Expecter {
 }
 
 // Add provides a mock function with given fields: installation
-func (_m *MockinstallationsLock) Add(installation lock.Installation) error {
+func (_m *MockinstallationsLock) Add(installation installations.Installation) error {
 	ret := _m.Called(installation)
 
 	if len(ret) == 0 {
@@ -31,7 +31,7 @@ func (_m *MockinstallationsLock) Add(installation lock.Installation) error {
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(lock.Installation) error); ok {
+	if rf, ok := ret.Get(0).(func(installations.Installation) error); ok {
 		r0 = rf(installation)
 	} else {
 		r0 = ret.Error(0)
@@ -46,14 +46,14 @@ type MockinstallationsLock_Add_Call struct {
 }
 
 // Add is a helper method to define mock.On call
-//   - installation lock.Installation
+//   - installation installations.Installation
 func (_e *MockinstallationsLock_Expecter) Add(installation interface{}) *MockinstallationsLock_Add_Call {
 	return &MockinstallationsLock_Add_Call{Call: _e.mock.On("Add", installation)}
 }
 
-func (_c *MockinstallationsLock_Add_Call) Run(run func(installation lock.Installation)) *MockinstallationsLock_Add_Call {
+func (_c *MockinstallationsLock_Add_Call) Run(run func(installation installations.Installation)) *MockinstallationsLock_Add_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(lock.Installation))
+		run(args[0].(installations.Installation))
 	})
 	return _c
 }
@@ -63,25 +63,25 @@ func (_c *MockinstallationsLock_Add_Call) Return(_a0 error) *MockinstallationsLo
 	return _c
 }
 
-func (_c *MockinstallationsLock_Add_Call) RunAndReturn(run func(lock.Installation) error) *MockinstallationsLock_Add_Call {
+func (_c *MockinstallationsLock_Add_Call) RunAndReturn(run func(installations.Installation) error) *MockinstallationsLock_Add_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetInstallations provides a mock function with no fields
-func (_m *MockinstallationsLock) GetInstallations() []lock.Installation {
+func (_m *MockinstallationsLock) GetInstallations() []installations.Installation {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetInstallations")
 	}
 
-	var r0 []lock.Installation
-	if rf, ok := ret.Get(0).(func() []lock.Installation); ok {
+	var r0 []installations.Installation
+	if rf, ok := ret.Get(0).(func() []installations.Installation); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]lock.Installation)
+			r0 = ret.Get(0).([]installations.Installation)
 		}
 	}
 
@@ -105,12 +105,58 @@ func (_c *MockinstallationsLock_GetInstallations_Call) Run(run func()) *Mockinst
 	return _c
 }
 
-func (_c *MockinstallationsLock_GetInstallations_Call) Return(_a0 []lock.Installation) *MockinstallationsLock_GetInstallations_Call {
+func (_c *MockinstallationsLock_GetInstallations_Call) Return(_a0 []installations.Installation) *MockinstallationsLock_GetInstallations_Call {
 	_c.Call.Return(_a0)
 	return _c
 }
 
-func (_c *MockinstallationsLock_GetInstallations_Call) RunAndReturn(run func() []lock.Installation) *MockinstallationsLock_GetInstallations_Call {
+func (_c *MockinstallationsLock_GetInstallations_Call) RunAndReturn(run func() []installations.Installation) *MockinstallationsLock_GetInstallations_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// LoadInstallations provides a mock function with given fields: path
+func (_m *MockinstallationsLock) LoadInstallations(path string) error {
+	ret := _m.Called(path)
+
+	if len(ret) == 0 {
+		panic("no return value specified for LoadInstallations")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(path)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockinstallationsLock_LoadInstallations_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'LoadInstallations'
+type MockinstallationsLock_LoadInstallations_Call struct {
+	*mock.Call
+}
+
+// LoadInstallations is a helper method to define mock.On call
+//   - path string
+func (_e *MockinstallationsLock_Expecter) LoadInstallations(path interface{}) *MockinstallationsLock_LoadInstallations_Call {
+	return &MockinstallationsLock_LoadInstallations_Call{Call: _e.mock.On("LoadInstallations", path)}
+}
+
+func (_c *MockinstallationsLock_LoadInstallations_Call) Run(run func(path string)) *MockinstallationsLock_LoadInstallations_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(string))
+	})
+	return _c
+}
+
+func (_c *MockinstallationsLock_LoadInstallations_Call) Return(_a0 error) *MockinstallationsLock_LoadInstallations_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockinstallationsLock_LoadInstallations_Call) RunAndReturn(run func(string) error) *MockinstallationsLock_LoadInstallations_Call {
 	_c.Call.Return(run)
 	return _c
 }

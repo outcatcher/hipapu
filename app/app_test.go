@@ -13,8 +13,8 @@ import (
 
 	"github.com/outcatcher/hipapu/app"
 	"github.com/outcatcher/hipapu/app/mocks"
+	"github.com/outcatcher/hipapu/internal/installations"
 	"github.com/outcatcher/hipapu/internal/local"
-	"github.com/outcatcher/hipapu/internal/lock"
 	"github.com/outcatcher/hipapu/internal/remote"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -54,11 +54,11 @@ func TestAppWorkflow(t *testing.T) {
 	expectedLocalPath := t.TempDir() + "/" + expectedLocalFilename
 
 	mockLock := mocks.NewMockinstallationsLock(t)
-	mockLock.On("Add", lock.Installation{
+	mockLock.On("Add", installations.Installation{
 		RepoURL:   expectecdURL,
 		LocalPath: expectedLocalPath,
 	}).Return(nil)
-	mockLock.On("GetInstallations").Return([]lock.Installation{
+	mockLock.On("GetInstallations").Return([]installations.Installation{
 		{
 			RepoURL:   expectecdURL,
 			LocalPath: expectedLocalPath,
@@ -70,7 +70,7 @@ func TestAppWorkflow(t *testing.T) {
 		},
 	})
 
-	apk.WithLockfile(mockLock)
+	apk.WithLock(mockLock)
 
 	ctx := t.Context()
 

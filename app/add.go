@@ -4,12 +4,12 @@ package app
 import (
 	"fmt"
 
-	"github.com/outcatcher/hipapu/internal/lock"
+	"github.com/outcatcher/hipapu/internal/installations"
 )
 
 // Add adds installation to the list. Rewrites lockfile.
 func (a *Application) Add(remoteURL, localPath string) error {
-	if err := a.lockfile.Add(lock.Installation{
+	if err := a.lock.Add(installations.Installation{
 		RepoURL:   remoteURL,
 		LocalPath: localPath,
 	}); err != nil {

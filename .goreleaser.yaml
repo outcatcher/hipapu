@@ -23,7 +23,7 @@ builds:
     dir: ./cmd
 
 archives:
-  - format: binary
+  - formats: binary
     name_template: "{{ .ProjectName }}"
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"

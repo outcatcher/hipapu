@@ -1,5 +1,5 @@
 // Copyright (C) 2025  Anton Kachurin
-package lock
+package installations
 
 import (
 	"fmt"

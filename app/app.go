@@ -9,8 +9,8 @@ import (
 	"log/slog"
 	"os"
 
+	"github.com/outcatcher/hipapu/internal/installations"
 	"github.com/outcatcher/hipapu/internal/local"
-	"github.com/outcatcher/hipapu/internal/lock"
 	"github.com/outcatcher/hipapu/internal/remote"
 )
 
@@ -21,9 +21,9 @@ var ErrNoLock = errors.New("no lock provided")
 //
 // Serves as entry point to external consumers.
 type Application struct {
-	lockfile installationsLock
-	remote   remoteClient
-	files    localFiles
+	lock   installationsLock
+	remote remoteClient
+	files  localFiles
 
 	logger *slog.Logger
 }
@@ -40,16 +40,16 @@ func New(lockPath string) (*Application, error) {
 
 	app.logger = initLogger()
 
-	locks := new(lock.Lock)
+	lock := new(installations.Lock)
 
-	err := locks.LoadInstallations(lockPath)
+	err := lock.LoadInstallations(lockPath)
 	if err != nil {
 		app.logger.Error("lockfile missing or corrupted (%s)")
 
 		return nil, fmt.Errorf("failed to load installations: %w", err)
 	}
 
-	app.WithLockfile(locks)
+	app.WithLock(lock)
 
 	remote, err := remote.New(os.Getenv("GITHUB_TOKEN"))
 	if err != nil {
@@ -80,16 +80,18 @@ func initLogger() *slog.Logger {
 
 type installationsLock interface {
 	// Add adds installation to the list.
-	Add(installation lock.Installation) error
+	Add(installation installations.Installation) error
 	// GetInstallations returns tracked installs.
-	GetInstallations() []lock.Installation
+	GetInstallations() []installations.Installation
+	// LoadInstallations loads installations data from file.
+	LoadInstallations(path string) error
 	// Update updates lockfile format making a backup.
 	UpdateVersion() error
 }
 
-// WithLockfile sets up lockfile for the app.
-func (a *Application) WithLockfile(locks installationsLock) {
-	a.lockfile = locks
+// WithLock sets up lockfile for the app.
+func (a *Application) WithLock(lock installationsLock) {
+	a.lock = lock
 }
 
 type remoteClient interface {

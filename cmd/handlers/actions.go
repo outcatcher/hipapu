@@ -3,11 +3,9 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"io"
 
 	"github.com/outcatcher/hipapu/app"
-	"github.com/urfave/cli/v3"
 )
 
 // DefaultCommandName - name of default command.
@@ -20,6 +18,8 @@ type application interface {
 	Add(remoteURL, localPath string) error
 	// Synchronize runs synchronization of all new releases replacing local files reporting the progress.
 	Synchronize(ctx context.Context, writer io.Writer) error
+	// UpdateLockVersion updates version if needed and creates backup.
+	UpdateLockfileVersion() error
 }
 
 // ActionHandlers handle CLI actions.
@@ -27,20 +27,4 @@ type ActionHandlers struct {
 	filePath, repoPath, lockPath string
 
 	app application
-}
-
-// Before is a before function for the command handlers.
-func (h *ActionHandlers) Before(ctx context.Context, cmd *cli.Command) (context.Context, error) {
-	if err := h.checkAndMigrateLockIfExists(cmd.Reader, cmd.Writer); err != nil {
-		return ctx, fmt.Errorf("failed to init app: %w", err)
-	}
-
-	application, err := app.New(h.lockPath)
-	if err != nil {
-		return ctx, fmt.Errorf("failed to init app: %w", err)
-	}
-
-	h.app = application
-
-	return ctx, nil
 }

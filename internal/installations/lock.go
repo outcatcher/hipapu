@@ -1,7 +1,7 @@
 // Copyright (C) 2025  Anton Kachurin
-package lock
+package installations
 
-// Lock - installations lockfile.
+// Lock - installations lockfile manager.
 type Lock struct {
 	// corresponding lockfile path
 	filePath string
