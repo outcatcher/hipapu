@@ -11,6 +11,7 @@ import (
 
 const selfRepo = "https://github.com/outcatcher/hipapu"
 
+// EnsureSelf makes sure config file has self-install.
 func (app *Application) EnsureSelf() error {
 	installs := app.lock.GetInstallations()
 

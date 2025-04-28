@@ -28,8 +28,8 @@ func TestEnsureSelf(t *testing.T) {
 			inst, ok := args.Get(0).(installations.Installation)
 			require.True(t, ok)
 
-			require.Equal(t, inst.ID, "0")
-			require.Equal(t, inst.RepoURL, selfRepo)
+			require.Equal(t, "0", inst.ID)
+			require.Equal(t, selfRepo, inst.RepoURL)
 		}).
 		Return(nil)
 
