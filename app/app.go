@@ -9,41 +9,47 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/outcatcher/hipapu/internal/config"
+	"github.com/outcatcher/hipapu/internal/installations"
 	"github.com/outcatcher/hipapu/internal/local"
 	"github.com/outcatcher/hipapu/internal/remote"
 )
 
-// ErrNoConfig - error for missing configuration path.
-var ErrNoConfig = errors.New("no config provided")
+// ErrNoLock - error for missing lockfile path.
+var ErrNoLock = errors.New("no lock provided")
 
 // Application is a base application state.
 //
 // Serves as entry point to external consumers.
 type Application struct {
-	config cfg
+	lock   installationsLock
 	remote remoteClient
 	files  localFiles
 
 	logger *slog.Logger
 }
 
-// New create new Application instance with given config and GH token from env.
+// New create new Application instance with given lock and GH token from env.
 //
 // todo (?): move somewhere else.
-func New(configPath string) (*Application, error) {
+func New(lockPath string) (*Application, error) {
 	app := new(Application)
 
-	if configPath == "" {
-		return nil, ErrNoConfig
+	if lockPath == "" {
+		return nil, ErrNoLock
 	}
 
-	cfg, err := config.LoadConfig(configPath)
+	app.logger = initLogger()
+
+	lock := new(installations.Lock)
+
+	err := lock.LoadInstallations(lockPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to load app configuration: %w", err)
+		app.logger.Error("lockfile missing or corrupted (%s)")
+
+		return nil, fmt.Errorf("failed to load installations: %w", err)
 	}
 
-	app.WithConfig(cfg)
+	app.WithLock(lock)
 
 	remote, err := remote.New(os.Getenv("GITHUB_TOKEN"))
 	if err != nil {
@@ -52,8 +58,6 @@ func New(configPath string) (*Application, error) {
 
 	app.WithRemote(remote)
 	app.WithFiles(new(local.Files))
-
-	app.logger = initLogger()
 
 	return app, nil
 }
@@ -74,16 +78,20 @@ func initLogger() *slog.Logger {
 	return logger
 }
 
-type cfg interface {
+type installationsLock interface {
 	// Add adds installation to the list.
-	Add(installation config.Installation) error
+	Add(installation installations.Installation) error
 	// GetInstallations returns tracked installs.
-	GetInstallations() []config.Installation
+	GetInstallations() []installations.Installation
+	// LoadInstallations loads installations data from file.
+	LoadInstallations(path string) error
+	// Update updates lockfile format making a backup.
+	UpdateVersion() error
 }
 
-// WithConfig sets up configuration for the app.
-func (a *Application) WithConfig(cfg cfg) {
-	a.config = cfg
+// WithLock sets up lockfile for the app.
+func (a *Application) WithLock(lock installationsLock) {
+	a.lock = lock
 }
 
 type remoteClient interface {

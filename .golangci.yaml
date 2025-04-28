@@ -24,6 +24,7 @@ linters:
         linters:
           - gosec
           - funlen
+          - err113
   settings:
     revive:
       rules:

@@ -13,24 +13,24 @@ import (
 
 	"github.com/outcatcher/hipapu/app"
 	"github.com/outcatcher/hipapu/app/mocks"
-	"github.com/outcatcher/hipapu/internal/config"
+	"github.com/outcatcher/hipapu/internal/installations"
 	"github.com/outcatcher/hipapu/internal/local"
 	"github.com/outcatcher/hipapu/internal/remote"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
-func TestAppNewNoConfig(t *testing.T) {
+func TestAppNewNoLock(t *testing.T) {
 	t.Parallel()
 
 	_, err := app.New("")
-	require.ErrorIs(t, err, app.ErrNoConfig)
+	require.ErrorIs(t, err, app.ErrNoLock)
 }
 
-func TestAppNewConfig(t *testing.T) {
+func TestAppNewLock(t *testing.T) {
 	t.Parallel()
 
-	filePath := t.TempDir() + "/test.config"
+	filePath := t.TempDir() + "/test.lock"
 
 	_, err := app.New(filePath)
 	require.NoError(t, err)
@@ -45,7 +45,7 @@ func TestAppWorkflow(t *testing.T) {
 		expectecdURL    = "https://github.com/outcatcher/asdfasdf"
 		expectedSkipURL = expectecdURL + ".skip.me"
 
-		expectedConfigPath    = "./config.cfg"
+		expectedLockPath      = "./lock.json"
 		expectedLocalFilename = "localFilePath"
 
 		expectecdDownloadURL = "https://adfsgijnasdfgj.test"
@@ -53,12 +53,12 @@ func TestAppWorkflow(t *testing.T) {
 
 	expectedLocalPath := t.TempDir() + "/" + expectedLocalFilename
 
-	mockCfg := mocks.NewMockcfg(t)
-	mockCfg.On("Add", config.Installation{
+	mockLock := mocks.NewMockinstallationsLock(t)
+	mockLock.On("Add", installations.Installation{
 		RepoURL:   expectecdURL,
 		LocalPath: expectedLocalPath,
 	}).Return(nil)
-	mockCfg.On("GetInstallations").Return([]config.Installation{
+	mockLock.On("GetInstallations").Return([]installations.Installation{
 		{
 			RepoURL:   expectecdURL,
 			LocalPath: expectedLocalPath,
@@ -70,7 +70,7 @@ func TestAppWorkflow(t *testing.T) {
 		},
 	})
 
-	apk.WithConfig(mockCfg)
+	apk.WithLock(mockLock)
 
 	ctx := t.Context()
 

@@ -12,7 +12,7 @@ tasks:
     desc: Run lint on the project
     cmd: docker run -t --rm -v $(pwd):/app -w /app golangci/golangci-lint:v2.0.2 golangci-lint run
 
-  mock:
+  generate:
     desc: Generates mocks
     cmd: docker run -v "$PWD":/src -w /src vektra/mockery:v2.53
 
@@ -24,7 +24,18 @@ tasks:
       - grep -v -E -f .covignore coverage.out > coverage.filtered.out
       - mv coverage.filtered.out coverage.out
       - go tool cover -func=coverage.out
+      - go tool cover -html=coverage.out -o coverage.html
 
   build:
     desc: Build binary
-    cmd: go build -o ./build/hipapu ./cmd/main.go
+    cmd: CGO_ENABLED=0 go build -ldflags='-s -w' -o ./build/hipapu ./cmd/main.go
+
+  install:
+    desc: Build and install to ~/.local/bin
+    deps:
+      - task: build
+    vars:
+      home:
+        sh: echo ~
+    cmds:
+      - cp "./build/hipapu" "{{.home}}/.local/bin/hipapu"

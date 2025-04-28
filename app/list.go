@@ -22,7 +22,7 @@ type Installation struct {
 
 // List lists all existing installations.
 func (a *Application) List(ctx context.Context) ([]Installation, error) {
-	installations := a.config.GetInstallations()
+	installations := a.lock.GetInstallations()
 
 	result := make([]Installation, len(installations))
 

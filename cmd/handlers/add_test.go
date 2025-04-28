@@ -27,10 +27,10 @@ func TestAdd(t *testing.T) {
 	appMock.On("Add", expectedRepoPath, expectedFilePath).Once().Return(nil)
 
 	hdl := &ActionHandlers{
-		filePath:   expectedFilePath,
-		repoPath:   expectedRepoPath,
-		configPath: "test-config-path-add",
-		app:        appMock,
+		filePath: expectedFilePath,
+		repoPath: expectedRepoPath,
+		lockPath: "test-lock-path-add",
+		app:      appMock,
 	}
 
 	addCmd := hdl.CommandAdd()
