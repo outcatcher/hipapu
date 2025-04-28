@@ -54,7 +54,7 @@ func (l *Lock) setDefaults() {
 }
 
 func appendSelf(installs []Installation) []Installation {
-	abs, err := filepath.Abs(os.Args[0])
+	selfPath, err := os.Executable() // os.Args[0] won't work if binary is in PATH
 	if err != nil {
 		return installs
 	}
@@ -62,8 +62,8 @@ func appendSelf(installs []Installation) []Installation {
 	return append(installs, Installation{
 		ID:              "0",
 		RepoURL:         selfRepo,
-		LocalPath:       abs,  // register self-update
-		KeepLastVersion: true, // safety measure for broken releases
-		SkipSync:        true, // todo: remove after KeepLastVersion implemented
+		LocalPath:       selfPath, // register self-update
+		KeepLastVersion: true,     // safety measure for broken releases
+		SkipSync:        true,     // todo: remove after KeepLastVersion implemented
 	})
 }

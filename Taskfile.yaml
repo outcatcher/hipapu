@@ -29,3 +29,13 @@ tasks:
   build:
     desc: Build binary
     cmd: CGO_ENABLED=0 go build -ldflags='-s -w' -o ./build/hipapu ./cmd/main.go
+
+  install:
+    desc: Build and install to ~/.local/bin
+    deps:
+      - task: build
+    vars:
+      home:
+        sh: echo ~
+    cmds:
+      - cp "./build/hipapu" "{{.home}}/.local/bin/hipapu"
